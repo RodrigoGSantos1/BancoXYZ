@@ -1,11 +1,47 @@
+import React from 'react';
 import { StatusBar } from 'expo-status-bar';
-import { Text, View } from 'react-native';
+import { NavigationContainer } from '@react-navigation/native';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+
+import { ThemeProvider } from './src/theme/ThemeContext';
+import { RootNavigator } from './src/navigation/RootNavigator';
+import { AuthProvider } from './src/providers/AuthProvider';
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 5 * 60 * 1000,
+      gcTime: 10 * 60 * 1000,
+      retry: (failureCount, error: any) => {
+        if (error?.status >= 400 && error?.status < 500) {
+          return false;
+        }
+        return failureCount < 3;
+      },
+    },
+    mutations: {
+      retry: false,
+    },
+  },
+});
 
 export default function App() {
   return (
-    <View className="flex-1 bg-red-500 items-center justify-center">
-      <Text className="text-white text-xl font-bold">BancoXYZ</Text>
-      <StatusBar style="light" />
-    </View>
+    <GestureHandlerRootView className="flex-1">
+      <SafeAreaProvider>
+        <QueryClientProvider client={queryClient}>
+          <ThemeProvider>
+            <AuthProvider>
+              <NavigationContainer>
+                <StatusBar style="auto" />
+                <RootNavigator />
+              </NavigationContainer>
+            </AuthProvider>
+          </ThemeProvider>
+        </QueryClientProvider>
+      </SafeAreaProvider>
+    </GestureHandlerRootView>
   );
 }
