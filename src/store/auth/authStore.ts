@@ -1,4 +1,5 @@
 import { createStore } from '../index';
+import { AuthService } from '../../services/auth/authService';
 
 interface User {
   id: string;
@@ -28,35 +29,33 @@ export const useAuthStore = createStore<AuthState>(
   'auth',
   initialState,
   (set, _get) => ({
-    login: async (email: string, _password: string) => {
+    login: async (email: string, password: string) => {
       set((state: AuthState) => {
         state.isLoading = true;
         state.error = null;
       });
 
       try {
-        await new Promise((resolve) => setTimeout(resolve, 1000));
+        const response = await AuthService.login({ email, password });
 
-        const mockUser: User = {
-          id: '1',
-          email,
-          name: 'João Silva',
+        const user: User = {
+          id: response.user.id.toString(),
+          email: response.user.email,
+          name: response.user.name,
           balance: 5000.0,
           accountNumber: '1234-5678-9012-3456',
         };
 
-        const mockToken = 'mock-jwt-token';
-
         set((state: AuthState) => {
-          state.user = mockUser;
-          state.token = mockToken;
+          state.user = user;
+          state.token = response.token;
           state.isAuthenticated = true;
           state.isLoading = false;
         });
       } catch (error) {
         set((state: AuthState) => {
           state.error =
-            error instanceof Error ? error.message : 'Erro no login';
+            error instanceof Error ? error.message : 'Credenciais inválidas';
           state.isLoading = false;
         });
       }
@@ -67,6 +66,7 @@ export const useAuthStore = createStore<AuthState>(
         state.user = null;
         state.token = null;
         state.isAuthenticated = false;
+        state.error = null;
       });
     },
 

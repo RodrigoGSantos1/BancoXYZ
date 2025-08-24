@@ -1,13 +1,13 @@
 import React from 'react';
-import { View, ScrollView, RefreshControl } from 'react-native';
+import { View, ScrollView, RefreshControl, Button } from 'react-native';
 import { BalanceCard } from '../../components/home/BalanceCard';
 import { QuickActions } from '../../components/home/QuickActions';
 import { UserInfo } from '../../components/home/UserInfo';
-// import { useAuthStore } from '../../store/auth/authStore';
+import { useAuth } from '../../hooks';
 
 export const HomeScreen = () => {
-  // const { user } = useAuthStore();
   const [refreshing, setRefreshing] = React.useState(false);
+  const { logout } = useAuth();
 
   const onRefresh = React.useCallback(() => {
     setRefreshing(true);
@@ -25,6 +25,7 @@ export const HomeScreen = () => {
         <UserInfo />
         <BalanceCard />
         <QuickActions />
+        <Button title="Logout" onPress={logout} />
       </View>
     </ScrollView>
   );

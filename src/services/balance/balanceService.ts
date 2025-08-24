@@ -1,7 +1,5 @@
-import { apiClient } from '../api/client';
-import { API_ENDPOINTS } from '../api/endpoints';
+import { MockService } from '../mock/mockService';
 import { useAuthStore } from '../../store/auth/authStore';
-import { MOCK_USERS } from '../mock/mockData';
 
 export interface BalanceResponse {
   currency: string;
@@ -10,27 +8,25 @@ export interface BalanceResponse {
 
 export class BalanceService {
   static async getBalance(): Promise<BalanceResponse> {
-    try {
-      const response = await apiClient.get(API_ENDPOINTS.BALANCE.GET);
-      return response.data;
-    } catch (error) {
-      return this.mockGetBalance();
+    const user = useAuthStore.getState().user;
+
+    if (!user) {
+      throw new Error('Usuário não autenticado');
     }
-  }
 
-  private static mockGetBalance(): Promise<BalanceResponse> {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        const user = useAuthStore.getState().user;
-        const mockUser = MOCK_USERS.find(
-          (u) => u.id === parseInt(user?.id || '1', 10)
-        );
+    const mockUser = MockService.getMockUser(user.email);
 
-        resolve({
-          currency: 'BRL',
-          accountBalance: mockUser?.balance || 0,
-        });
-      }, 500);
-    });
+    const mockData: BalanceResponse = {
+      currency: 'BRL',
+      accountBalance: mockUser?.balance || user.balance || 5000.0,
+    };
+
+    const response = await MockService.simulateApiCall(mockData, 800);
+
+    if (response.success) {
+      return response.data;
+    } else {
+      throw new Error(response.message || 'Erro ao buscar saldo');
+    }
   }
 }

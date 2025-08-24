@@ -1,6 +1,4 @@
-import { apiClient } from '../api/client';
-import { API_ENDPOINTS } from '../api/endpoints';
-import { MOCK_TRANSFERS } from '../mock/mockData';
+import { MockService } from '../mock/mockService';
 
 export interface TransferRequest {
   value: number;
@@ -11,6 +9,8 @@ export interface TransferRequest {
 
 export interface TransferResponse {
   status: 'success' | 'error';
+  transferId?: string;
+  message?: string;
 }
 
 export interface TransferItem {
@@ -26,43 +26,53 @@ export interface TransferItem {
 
 export class TransferService {
   static async createTransfer(
-    data: TransferRequest
+    _data: TransferRequest
   ): Promise<TransferResponse> {
-    try {
-      const response = await apiClient.post(
-        API_ENDPOINTS.TRANSFER.CREATE,
-        data
-      );
+    const mockData: TransferResponse = {
+      status: 'success',
+      transferId: `TRF-${Date.now()}`,
+      message: 'Transferência realizada com sucesso',
+    };
+
+    const response = await MockService.simulateApiCall(mockData, 1200);
+
+    if (response.success) {
       return response.data;
-    } catch (error) {
-      return this.mockCreateTransfer(data);
+    } else {
+      throw new Error('Erro ao criar transferência');
     }
   }
 
   static async getTransfers(): Promise<TransferItem[]> {
-    try {
-      const response = await apiClient.get(API_ENDPOINTS.TRANSFER.LIST);
+    const mockData: TransferItem[] = [
+      {
+        id: 1,
+        value: 500.0,
+        date: '2024-01-15',
+        currency: 'BRL',
+        payeer: {
+          document: '123.456.789-00',
+          name: 'João Silva',
+        },
+      },
+      {
+        id: 2,
+        value: 1200.0,
+        date: '2024-01-10',
+        currency: 'BRL',
+        payeer: {
+          document: '987.654.321-00',
+          name: 'Maria Santos',
+        },
+      },
+    ];
+
+    const response = await MockService.simulateApiCall(mockData, 600);
+
+    if (response.success) {
       return response.data;
-    } catch (error) {
-      return this.mockGetTransfers();
+    } else {
+      throw new Error('Erro ao buscar transferências');
     }
-  }
-
-  private static mockCreateTransfer(
-    _data: TransferRequest
-  ): Promise<TransferResponse> {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve({ status: 'success' });
-      }, 1000);
-    });
-  }
-
-  private static mockGetTransfers(): Promise<TransferItem[]> {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve(MOCK_TRANSFERS);
-      }, 500);
-    });
   }
 }
