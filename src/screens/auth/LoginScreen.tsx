@@ -6,20 +6,47 @@ import {
   TouchableOpacity,
   ScrollView,
 } from 'react-native';
+import { useForm, Controller } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
 import { useAuthStore } from '../../store/auth/authStore';
 import { Eye, EyeOff, Fingerprint } from 'lucide-react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 
-export const LoginScreen = () => {
-  const { login, isLoading, error } = useAuthStore();
+const loginSchema = z.object({
+  email: z.string().email('Email inválido').min(1, 'Email é obrigatório'),
+  password: z
+    .string()
+    .min(1, 'Senha é obrigatória')
+    .min(4, 'Senha deve ter pelo menos 4 caracteres'),
+});
 
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+type LoginFormData = z.infer<typeof loginSchema>;
+
+export const LoginScreen = () => {
+  const { login, isLoading, error, clearError } = useAuthStore();
   const [rememberMe, setRememberMe] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
 
-  const handleLogin = () => {
-    login(email, password);
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<LoginFormData>({
+    resolver: zodResolver(loginSchema),
+    defaultValues: {
+      email: '',
+      password: '',
+    },
+  });
+
+  const onSubmit = async (data: LoginFormData) => {
+    try {
+      clearError();
+      await login(data.email, data.password);
+    } catch (loginError) {
+      console.error('Login error:', error);
+    }
   };
 
   return (
@@ -51,46 +78,73 @@ export const LoginScreen = () => {
 
       <View className="px-6 -mt-20">
         <View className="bg-white rounded-3xl shadow-lg p-8">
-          {/* Email Field */}
           <View className="mb-6">
             <Text className="text-gray-700 font-semibold mb-2 text-base">
               Email Address
             </Text>
-            <TextInput
-              className="bg-gray-50 border border-gray-200 rounded-xl p-4 text-gray-800"
-              placeholder="email@gmail.com"
-              placeholderTextColor="#9CA3AF"
-              value={email}
-              onChangeText={setEmail}
-              keyboardType="email-address"
-              autoCapitalize="none"
+            <Controller
+              control={control}
+              name="email"
+              render={({ field: { onChange, onBlur, value } }) => (
+                <TextInput
+                  className={`bg-gray-50 border rounded-xl p-4 text-gray-800 ${
+                    errors.email ? 'border-red-500' : 'border-gray-200'
+                  }`}
+                  placeholder="email@gmail.com"
+                  placeholderTextColor="#9CA3AF"
+                  value={value}
+                  onChangeText={onChange}
+                  onBlur={onBlur}
+                  keyboardType="email-address"
+                  autoCapitalize="none"
+                />
+              )}
             />
+            {errors.email && (
+              <Text className="text-red-500 text-sm mt-1">
+                {errors.email.message}
+              </Text>
+            )}
           </View>
 
           <View className="mb-6">
             <Text className="text-gray-700 font-semibold mb-2 text-base">
               Password
             </Text>
-            <View className="relative">
-              <TextInput
-                className="bg-gray-50 border border-gray-200 rounded-xl p-4 pr-12 text-gray-800"
-                placeholder="••••••••"
-                placeholderTextColor="#9CA3AF"
-                value={password}
-                onChangeText={setPassword}
-                secureTextEntry={!showPassword}
-              />
-              <TouchableOpacity
-                className="absolute right-4 top-4"
-                onPress={() => setShowPassword(!showPassword)}
-              >
-                {showPassword ? (
-                  <Eye size={20} className="text-gray-500" />
-                ) : (
-                  <EyeOff size={20} className="text-gray-500" />
-                )}
-              </TouchableOpacity>
-            </View>
+            <Controller
+              control={control}
+              name="password"
+              render={({ field: { onChange, onBlur, value } }) => (
+                <View className="relative">
+                  <TextInput
+                    className={`bg-gray-50 border rounded-xl p-4 pr-12 text-gray-800 ${
+                      errors.password ? 'border-red-500' : 'border-gray-200'
+                    }`}
+                    placeholder="••••••••"
+                    placeholderTextColor="#9CA3AF"
+                    value={value}
+                    onChangeText={onChange}
+                    onBlur={onBlur}
+                    secureTextEntry={!showPassword}
+                  />
+                  <TouchableOpacity
+                    className="absolute right-4 top-4"
+                    onPress={() => setShowPassword(!showPassword)}
+                  >
+                    {showPassword ? (
+                      <Eye size={20} color="#6B7280" />
+                    ) : (
+                      <EyeOff size={20} color="#6B7280" />
+                    )}
+                  </TouchableOpacity>
+                </View>
+              )}
+            />
+            {errors.password && (
+              <Text className="text-red-500 text-sm mt-1">
+                {errors.password.message}
+              </Text>
+            )}
           </View>
 
           <View className="flex-row justify-between items-center mb-8">
@@ -117,7 +171,7 @@ export const LoginScreen = () => {
 
           <TouchableOpacity
             className="bg-primary-500 rounded-xl p-4 mb-8"
-            onPress={handleLogin}
+            onPress={handleSubmit(onSubmit)}
             disabled={isLoading}
           >
             <Text className="text-white text-center font-bold text-lg">
@@ -127,10 +181,12 @@ export const LoginScreen = () => {
         </View>
       </View>
 
-      <TouchableOpacity className="px-6 py-8 items-center">
-        <Fingerprint size={60} className="text-primary-900 mb-3 fon" />
+      <View className="px-6 py-8 items-center">
+        <TouchableOpacity className="w-16 h-16 bg-primary-900 rounded-full items-center justify-center mb-3">
+          <Fingerprint size={32} color="white" />
+        </TouchableOpacity>
         <Text className="text-gray-600 text-center">Biometric Login</Text>
-      </TouchableOpacity>
+      </View>
 
       {error && (
         <View className="mx-6 mb-4 bg-red-50 border border-red-200 rounded-xl p-4">
