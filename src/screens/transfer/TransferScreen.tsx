@@ -1,8 +1,216 @@
-import React from 'react';
-import { View, Text } from 'react-native';
+import React, { useState } from 'react';
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  ScrollView,
+  Alert,
+} from 'react-native';
+import { useForm, Controller } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Send, ArrowLeft } from 'lucide-react-native';
+import { useNavigation } from '@react-navigation/native';
+import { transferSchema, TransferFormData } from '../../schemas/transferSchema';
+import { TransferService } from '../../services/transfer/transferService';
+import { DatePicker } from '../../components/forms/DatePicker';
+import { useAuthStore } from '../../store/auth/authStore';
 
-export const TransferScreen = () => (
-  <View className="flex-1 justify-center items-center">
-    <Text className="text-xl">Nova Transferência</Text>
-  </View>
-);
+export const TransferScreen = () => {
+  const navigation = useNavigation();
+  const { user } = useAuthStore();
+  const [isLoading, setIsLoading] = useState(false);
+
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+    reset,
+  } = useForm<TransferFormData>({
+    resolver: zodResolver(transferSchema),
+    defaultValues: {
+      value: 0,
+      currency: 'BRL',
+      payeerDocument: '',
+      payeerName: '',
+      transferDate: '',
+      description: '',
+    },
+  });
+
+  const onSubmit = async (data: TransferFormData) => {
+    if (data.value > (user?.balance || 0)) {
+      Alert.alert('Erro', 'Saldo insuficiente para realizar a transferência');
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      await TransferService.createTransfer(data);
+      Alert.alert('Sucesso', 'Transferência realizada com sucesso!', [
+        {
+          text: 'OK',
+          onPress: () => {
+            reset();
+            navigation.goBack();
+          },
+        },
+      ]);
+    } catch (error) {
+      Alert.alert('Erro', 'Falha ao realizar transferência. Tente novamente.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <View className="flex-1 bg-gray-100">
+      <View className="bg-white p-4 flex-row items-center">
+        <TouchableOpacity onPress={() => navigation.goBack()} className="mr-4">
+          <ArrowLeft size={24} color="#374151" />
+        </TouchableOpacity>
+        <Text className="text-xl font-bold text-gray-800">
+          Nova Transferência
+        </Text>
+      </View>
+
+      <ScrollView className="flex-1 p-4">
+        <View className="bg-white rounded-2xl p-6 shadow-sm">
+          <Text className="text-2xl font-bold text-gray-800 mb-6">
+            Dados da Transferência
+          </Text>
+
+          <Controller
+            control={control}
+            name="value"
+            render={({ field: { onChange, onBlur, value } }) => (
+              <View className="mb-4">
+                <Text className="text-gray-700 font-semibold mb-2 text-base">
+                  Valor
+                </Text>
+                <TextInput
+                  className={`bg-gray-50 border rounded-xl p-4 text-gray-800 text-lg ${
+                    errors.value ? 'border-red-500' : 'border-gray-200'
+                  }`}
+                  placeholder="0,00"
+                  placeholderTextColor="#9CA3AF"
+                  value={value ? value.toString() : ''}
+                  onChangeText={(text) => onChange(parseFloat(text) || 0)}
+                  onBlur={onBlur}
+                  keyboardType="numeric"
+                />
+                {errors.value && (
+                  <Text className="text-red-500 text-sm mt-1">
+                    {errors.value.message}
+                  </Text>
+                )}
+              </View>
+            )}
+          />
+
+          <Controller
+            control={control}
+            name="payeerDocument"
+            render={({ field: { onChange, onBlur, value } }) => (
+              <View className="mb-4">
+                <Text className="text-gray-700 font-semibold mb-2 text-base">
+                  CPF do Destinatário
+                </Text>
+                <TextInput
+                  className={`bg-gray-50 border rounded-xl p-4 text-gray-800 ${
+                    errors.payeerDocument ? 'border-red-500' : 'border-gray-200'
+                  }`}
+                  placeholder="000.000.000-00"
+                  placeholderTextColor="#9CA3AF"
+                  value={value}
+                  onChangeText={onChange}
+                  onBlur={onBlur}
+                  keyboardType="numeric"
+                />
+                {errors.payeerDocument && (
+                  <Text className="text-red-500 text-sm mt-1">
+                    {errors.payeerDocument.message}
+                  </Text>
+                )}
+              </View>
+            )}
+          />
+
+          <Controller
+            control={control}
+            name="payeerName"
+            render={({ field: { onChange, onBlur, value } }) => (
+              <View className="mb-4">
+                <Text className="text-gray-700 font-semibold mb-2 text-base">
+                  Nome do Destinatário
+                </Text>
+                <TextInput
+                  className={`bg-gray-50 border rounded-xl p-4 text-gray-800 ${
+                    errors.payeerName ? 'border-red-500' : 'border-gray-200'
+                  }`}
+                  placeholder="Nome completo"
+                  placeholderTextColor="#9CA3AF"
+                  value={value}
+                  onChangeText={onChange}
+                  onBlur={onBlur}
+                  autoCapitalize="words"
+                />
+                {errors.payeerName && (
+                  <Text className="text-red-500 text-sm mt-1">
+                    {errors.payeerName.message}
+                  </Text>
+                )}
+              </View>
+            )}
+          />
+
+          <Controller
+            control={control}
+            name="transferDate"
+            render={({ field: { onChange, value } }) => (
+              <DatePicker
+                value={value}
+                onChange={onChange}
+                label="Data da Transferência"
+                placeholder="Selecione uma data"
+              />
+            )}
+          />
+
+          <Controller
+            control={control}
+            name="description"
+            render={({ field: { onChange, onBlur, value } }) => (
+              <View className="mb-6">
+                <Text className="text-gray-700 font-semibold mb-2 text-base">
+                  Descrição (opcional)
+                </Text>
+                <TextInput
+                  className="bg-gray-50 border border-gray-200 rounded-xl p-4 text-gray-800"
+                  placeholder="Descrição da transferência"
+                  placeholderTextColor="#9CA3AF"
+                  value={value}
+                  onChangeText={onChange}
+                  onBlur={onBlur}
+                  multiline
+                  numberOfLines={3}
+                />
+              </View>
+            )}
+          />
+
+          <TouchableOpacity
+            className="bg-primary-500 rounded-xl p-4 flex-row items-center justify-center"
+            onPress={handleSubmit(onSubmit)}
+            disabled={isLoading}
+          >
+            <Send size={20} color="white" className="mr-2" />
+            <Text className="text-white text-center font-bold text-lg ml-2">
+              {isLoading ? 'Processando...' : 'Realizar Transferência'}
+            </Text>
+          </TouchableOpacity>
+        </View>
+      </ScrollView>
+    </View>
+  );
+};
