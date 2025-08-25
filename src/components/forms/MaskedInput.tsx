@@ -32,16 +32,8 @@ export const MaskedInput: React.FC<MaskedInputProps> = ({
   }, [value, mask]);
 
   const handleChangeText = (text: string) => {
-    const numericText = text.replace(/\D/g, '');
-
-    if (numericText === '') {
-      setDisplayValue('');
-      onValueChange(0);
-      return;
-    }
-
-    setDisplayValue(numericText);
-    const unmaskedValue = unmask(numericText);
+    setDisplayValue(text);
+    const unmaskedValue = unmask(text);
     onValueChange(unmaskedValue);
   };
 

@@ -1,34 +1,25 @@
-// Jest setup file
 import 'react-native-gesture-handler/jestSetup';
 
-// Mock expo modules
-jest.mock('expo-modules-core', () => {
-  const mockModule = {
-    EventEmitter: jest.fn(),
-    NativeModule: jest.fn(),
-    SharedObject: jest.fn(),
-    SharedRef: jest.fn(),
-  };
-  return mockModule;
-});
+jest.mock('@react-native-async-storage/async-storage', () =>
+  require('@react-native-async-storage/async-storage/jest/async-storage-mock')
+);
 
-// Mock expo status bar
-jest.mock('expo-status-bar', () => ({
-  StatusBar: 'StatusBar',
-}));
-
-// Mock react native reanimated
 jest.mock('react-native-reanimated', () => {
   const Reanimated = require('react-native-reanimated/mock');
   Reanimated.default.call = () => {};
   return Reanimated;
 });
 
-// Mock nativewind
-jest.mock('nativewind', () => ({
-  styled: jest.fn((component) => component),
-  useColorScheme: jest.fn(() => 'light'),
+jest.mock('expo-linear-gradient', () => 'LinearGradient');
+
+jest.mock('@react-navigation/native', () => ({
+  useNavigation: () => ({
+    navigate: jest.fn(),
+    goBack: jest.fn(),
+  }),
+  useRoute: () => ({
+    params: {},
+  }),
 }));
 
-// Global mocks
-global.__reanimatedWorkletInit = jest.fn();
+global.fetch = jest.fn();

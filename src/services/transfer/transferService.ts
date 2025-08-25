@@ -26,8 +26,24 @@ export interface TransferItem {
 
 export class TransferService {
   static async createTransfer(
-    _data: TransferRequest
+    data: TransferRequest
   ): Promise<TransferResponse> {
+    if (!data.value || data.value <= 0) {
+      throw new Error('Valor deve ser maior que zero');
+    }
+
+    if (!data.currency || data.currency.trim() === '') {
+      throw new Error('Moeda é obrigatória');
+    }
+
+    if (!data.payeerDocument || data.payeerDocument.trim() === '') {
+      throw new Error('Documento do beneficiário é obrigatório');
+    }
+
+    if (!data.transferDate || data.transferDate.trim() === '') {
+      throw new Error('Data da transferência é obrigatória');
+    }
+
     const mockData: TransferResponse = {
       status: 'success',
       transferId: `TRF-${Date.now()}`,

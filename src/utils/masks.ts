@@ -10,8 +10,14 @@ export const masks = {
   },
 
   currencyToNumber: (value: string): number => {
+    if (!value || value.trim() === '') {
+      return 0;
+    }
     const numericValue = value.replace(/\D/g, '');
-    return parseInt(numericValue, 10);
+    if (numericValue === '') {
+      return 0;
+    }
+    return parseInt(numericValue, 10) / 100;
   },
 
   cpf: (value: string): string => {
