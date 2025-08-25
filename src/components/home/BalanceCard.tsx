@@ -1,10 +1,10 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, useMemo } from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import { RefreshCw } from 'lucide-react-native';
 import { BalanceService } from '../../services/balance/balanceService';
 import { useAuthStore } from '../../store/auth/authStore';
 
-export const BalanceCard = () => {
+export const BalanceCard = React.memo(() => {
   const { user, isAuthenticated } = useAuthStore();
   const [balance, setBalance] = useState(0);
   const [currency, setCurrency] = useState('BRL');
@@ -16,7 +16,6 @@ export const BalanceCard = () => {
     }
 
     setIsLoading(true);
-
     try {
       const response = await BalanceService.getBalance();
       setBalance(response.accountBalance);
@@ -28,14 +27,14 @@ export const BalanceCard = () => {
     }
   }, [user, isAuthenticated]);
 
+  const formattedBalance = useMemo(() => {
+    return balance.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
+  }, [balance]);
+
   useEffect(() => {
     if (user && isAuthenticated) {
       setBalance(user.balance || 0);
-
-      const timer = setTimeout(() => {
-        fetchBalance();
-      }, 1000);
-
+      const timer = setTimeout(fetchBalance, 1000);
       return () => clearTimeout(timer);
     }
   }, [user, isAuthenticated, fetchBalance]);
@@ -54,11 +53,10 @@ export const BalanceCard = () => {
       </View>
 
       <Text className="text-3xl font-bold text-gray-800 mb-2">
-        {currency}{' '}
-        {balance.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+        {currency} {formattedBalance}
       </Text>
 
       <Text className="text-gray-500 text-sm">Conta: {user.accountNumber}</Text>
     </View>
   );
-};
+});
