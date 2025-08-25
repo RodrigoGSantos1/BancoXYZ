@@ -5,6 +5,7 @@ import {
   ValidationError,
   NetworkError,
 } from '../../errors/AppError';
+import { withRetry } from '../../utils/retry';
 
 export class TransferService {
   static async createTransfer(
@@ -40,7 +41,10 @@ export class TransferService {
       message: 'Transferência realizada com sucesso',
     };
 
-    const response = await MockService.simulateApiCall(mockData, 1200);
+    const response = await withRetry(
+      () => MockService.simulateApiCall(mockData, 1200),
+      { maxAttempts: 3, delayMs: 1000 }
+    );
 
     if (response.success) {
       return response.data;
@@ -73,7 +77,10 @@ export class TransferService {
       },
     ];
 
-    const response = await MockService.simulateApiCall(mockData, 600);
+    const response = await withRetry(
+      () => MockService.simulateApiCall(mockData, 600),
+      { maxAttempts: 3, delayMs: 1000 }
+    );
 
     if (response.success) {
       return response.data;
