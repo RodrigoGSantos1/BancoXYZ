@@ -14,7 +14,9 @@ import { useNavigation } from '@react-navigation/native';
 import { transferSchema, TransferFormData } from '../../schemas/transferSchema';
 import { TransferService } from '../../services/transfer/transferService';
 import { DatePicker } from '../../components/forms/DatePicker';
+import { MaskedInput } from '../../components/forms/MaskedInput';
 import { useAuthStore } from '../../store/auth/authStore';
+import { masks } from '../../utils/masks';
 
 export const TransferScreen = () => {
   const navigation = useNavigation();
@@ -26,6 +28,7 @@ export const TransferScreen = () => {
     handleSubmit,
     formState: { errors },
     reset,
+    setValue,
   } = useForm<TransferFormData>({
     resolver: zodResolver(transferSchema),
     defaultValues: {
@@ -83,56 +86,39 @@ export const TransferScreen = () => {
           <Controller
             control={control}
             name="value"
-            render={({ field: { onChange, onBlur, value } }) => (
-              <View className="mb-4">
-                <Text className="text-gray-700 font-semibold mb-2 text-base">
-                  Valor
-                </Text>
-                <TextInput
-                  className={`bg-gray-50 border rounded-xl p-4 text-gray-800 text-lg ${
-                    errors.value ? 'border-red-500' : 'border-gray-200'
-                  }`}
-                  placeholder="0,00"
-                  placeholderTextColor="#9CA3AF"
-                  value={value ? value.toString() : ''}
-                  onChangeText={(text) => onChange(parseFloat(text) || 0)}
-                  onBlur={onBlur}
-                  keyboardType="numeric"
-                />
-                {errors.value && (
-                  <Text className="text-red-500 text-sm mt-1">
-                    {errors.value.message}
-                  </Text>
-                )}
-              </View>
+            render={({ field: { value } }) => (
+              <MaskedInput
+                label="Valor"
+                placeholder="0,00"
+                mask={masks.formatCurrencyInput}
+                unmask={masks.currencyToNumber}
+                onValueChange={(newValue) =>
+                  setValue('value', newValue as number)
+                }
+                value={value}
+                keyboardType="numeric"
+                error={errors.value?.message}
+              />
             )}
           />
 
           <Controller
             control={control}
             name="payeerDocument"
-            render={({ field: { onChange, onBlur, value } }) => (
-              <View className="mb-4">
-                <Text className="text-gray-700 font-semibold mb-2 text-base">
-                  CPF do Destinatário
-                </Text>
-                <TextInput
-                  className={`bg-gray-50 border rounded-xl p-4 text-gray-800 ${
-                    errors.payeerDocument ? 'border-red-500' : 'border-gray-200'
-                  }`}
-                  placeholder="000.000.000-00"
-                  placeholderTextColor="#9CA3AF"
-                  value={value}
-                  onChangeText={onChange}
-                  onBlur={onBlur}
-                  keyboardType="numeric"
-                />
-                {errors.payeerDocument && (
-                  <Text className="text-red-500 text-sm mt-1">
-                    {errors.payeerDocument.message}
-                  </Text>
-                )}
-              </View>
+            render={({ field: { value } }) => (
+              <MaskedInput
+                label="CPF do Destinatário"
+                placeholder="000.000.000-00"
+                mask={masks.cpf}
+                unmask={masks.cpfToNumber}
+                onValueChange={(newValue) =>
+                  setValue('payeerDocument', newValue.toString())
+                }
+                value={value.toString()}
+                keyboardType="numeric"
+                maxLength={14}
+                error={errors.payeerDocument?.message}
+              />
             )}
           />
 
