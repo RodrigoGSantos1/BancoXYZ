@@ -1,16 +1,18 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import {
   View,
   Text,
-  ScrollView,
+  FlatList,
   RefreshControl,
   TouchableOpacity,
+  ListRenderItem,
 } from 'react-native';
 import { Plus, Calendar } from 'lucide-react-native';
 import { TransferService } from '../../services/transfer/transferService';
 import { TransferFilters, TransferItem } from '../../components/index';
 import { useNavigation } from '@react-navigation/native';
 import { Transfer } from '../../types';
+import { getTransferItemLayout } from '../../utils/dimensions';
 
 const TransfersScreen = () => {
   const navigation = useNavigation();
@@ -42,54 +44,112 @@ const TransfersScreen = () => {
     setRefreshing(false);
   }, [fetchTransfers]);
 
-  const handleSearch = (query: string) => {
-    if (!query.trim()) {
-      setFilteredTransfers(transfers);
-      return;
-    }
+  const handleSearch = useCallback(
+    (query: string) => {
+      if (!query.trim()) {
+        setFilteredTransfers(transfers);
+        return;
+      }
 
-    const filtered = transfers.filter(
-      (transfer) =>
-        transfer.payeer.name.toLowerCase().includes(query.toLowerCase()) ||
-        transfer.payeer.document.includes(query)
-    );
-    setFilteredTransfers(filtered);
-  };
+      const filtered = transfers.filter(
+        (transfer) =>
+          transfer.payeer.name.toLowerCase().includes(query.toLowerCase()) ||
+          transfer.payeer.document.includes(query)
+      );
+      setFilteredTransfers(filtered);
+    },
+    [transfers]
+  );
 
-  const handleFilterByValue = (minValue: number, maxValue: number) => {
-    const filtered = transfers.filter(
-      (transfer) => transfer.value >= minValue && transfer.value <= maxValue
-    );
-    setFilteredTransfers(filtered);
-  };
+  const handleFilterByValue = useCallback(
+    (minValue: number, maxValue: number) => {
+      const filtered = transfers.filter(
+        (transfer) => transfer.value >= minValue && transfer.value <= maxValue
+      );
+      setFilteredTransfers(filtered);
+    },
+    [transfers]
+  );
 
-  const handleFilterByDate = (startDate: string, endDate: string) => {
-    if (!startDate && !endDate) {
-      setFilteredTransfers(transfers);
-      return;
-    }
+  const handleFilterByDate = useCallback(
+    (startDate: string, endDate: string) => {
+      if (!startDate && !endDate) {
+        setFilteredTransfers(transfers);
+        return;
+      }
 
-    const filtered = transfers.filter((transfer) => {
-      const transferDate = new Date(transfer.date);
-      const start = startDate ? new Date(startDate) : new Date(0);
-      const end = endDate ? new Date(endDate) : new Date();
+      const filtered = transfers.filter((transfer) => {
+        const transferDate = new Date(transfer.date);
+        const start = startDate ? new Date(startDate) : new Date(0);
+        const end = endDate ? new Date(endDate) : new Date();
 
-      return transferDate >= start && transferDate <= end;
-    });
-    setFilteredTransfers(filtered);
-  };
+        return transferDate >= start && transferDate <= end;
+      });
+      setFilteredTransfers(filtered);
+    },
+    [transfers]
+  );
 
-  const handleClearFilters = () => {
+  const handleClearFilters = useCallback(() => {
     setFilteredTransfers(transfers);
-  };
+  }, [transfers]);
 
-  const handleTransferPress = (transfer: Transfer) => {
+  const handleTransferPress = useCallback((transfer: Transfer) => {
     console.log('Transferência selecionada:', transfer);
-  };
+  }, []);
 
-  const handleNewTransfer = () => {
+  const handleNewTransfer = useCallback(() => {
     navigation.navigate('Transfer' as never);
-  };
+  }, [navigation]);
+
+  const renderItem: ListRenderItem<Transfer> = useCallback(
+    ({ item }) => (
+      <TransferItem transfer={item} onPress={() => handleTransferPress(item)} />
+    ),
+    [handleTransferPress]
+  );
+
+  const ListHeaderComponent = useMemo(
+    () => (
+      <>
+        <TransferFilters
+          onSearch={handleSearch}
+          onFilterByValue={handleFilterByValue}
+          onFilterByDate={handleFilterByDate}
+          onClearFilters={handleClearFilters}
+        />
+        <View className="flex-row items-center justify-between mb-4 px-4">
+          <Text className="text-gray-700 font-semibold">
+            {filteredTransfers.length} transferência(s)
+          </Text>
+          <TouchableOpacity className="flex-row items-center">
+            <Text className="text-primary-500 text-sm mr-1">Ordenar</Text>
+            <Calendar size={16} className="text-primary-500" />
+          </TouchableOpacity>
+        </View>
+      </>
+    ),
+    [
+      handleSearch,
+      handleFilterByValue,
+      handleFilterByDate,
+      handleClearFilters,
+      filteredTransfers.length,
+    ]
+  );
+
+  const ListEmptyComponent = useMemo(
+    () => (
+      <View className="items-center py-8">
+        <Text className="text-gray-600">
+          {isLoading
+            ? 'Carregando transferências...'
+            : 'Nenhuma transferência encontrada'}
+        </Text>
+      </View>
+    ),
+    [isLoading]
+  );
 
   return (
     <View className="flex-1 bg-gray-100">
@@ -107,51 +167,22 @@ const TransfersScreen = () => {
         </View>
       </View>
 
-      <ScrollView
-        className="flex-1 px-4"
+      <FlatList
+        data={filteredTransfers}
+        renderItem={renderItem}
+        keyExtractor={(item) => item.id.toString()}
+        contentContainerStyle={{ paddingHorizontal: 16 }}
+        getItemLayout={getTransferItemLayout}
+        removeClippedSubviews
+        maxToRenderPerBatch={5}
+        windowSize={11}
+        initialNumToRender={10}
+        ListHeaderComponent={ListHeaderComponent}
+        ListEmptyComponent={ListEmptyComponent}
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
-      >
-        <TransferFilters
-          onSearch={handleSearch}
-          onFilterByValue={handleFilterByValue}
-          onFilterByDate={handleFilterByDate}
-          onClearFilters={handleClearFilters}
-        />
-
-        {isLoading ? (
-          <View className="items-center py-8">
-            <Text className="text-gray-600">Carregando transferências...</Text>
-          </View>
-        ) : filteredTransfers.length === 0 ? (
-          <View className="items-center py-8">
-            <Text className="text-gray-600">
-              Nenhuma transferência encontrada
-            </Text>
-          </View>
-        ) : (
-          <>
-            <View className="flex-row items-center justify-between mb-4">
-              <Text className="text-gray-700 font-semibold">
-                {filteredTransfers.length} transferência(s)
-              </Text>
-              <TouchableOpacity className="flex-row items-center">
-                <Text className="text-primary-500 text-sm mr-1">Ordenar</Text>
-                <Calendar size={16} color="#5B6BFF" />
-              </TouchableOpacity>
-            </View>
-
-            {filteredTransfers.map((transfer) => (
-              <TransferItem
-                key={transfer.id}
-                transfer={transfer}
-                onPress={() => handleTransferPress(transfer)}
-              />
-            ))}
-          </>
-        )}
-      </ScrollView>
+      />
     </View>
   );
 };
