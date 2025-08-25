@@ -1,5 +1,6 @@
 import { createStore } from '../index';
 import { AuthService } from '../../services/auth/authService';
+import { MockService } from '../../services/mock/mockService';
 
 interface User {
   id: string;
@@ -37,13 +38,18 @@ export const useAuthStore = createStore<AuthState>(
 
       try {
         const response = await AuthService.login({ email, password });
+        const mockUser = MockService.getMockUser(email);
+
+        if (!mockUser) {
+          throw new Error('Usuário não encontrado');
+        }
 
         const user: User = {
           id: response.user.id.toString(),
           email: response.user.email,
           name: response.user.name,
-          balance: 5000.0,
-          accountNumber: '1234-5678-9012-3456',
+          balance: mockUser.balance,
+          accountNumber: mockUser.accountNumber,
         };
 
         set((state: AuthState) => {
