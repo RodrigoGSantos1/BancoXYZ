@@ -1,6 +1,6 @@
 import { MockService } from '../mock/mockService';
-
 import { LoginRequest, LoginResponse } from '../../types';
+import { AuthenticationError, ValidationError } from '../../errors/AppError';
 
 export class AuthService {
   static async login(credentials: LoginRequest): Promise<LoginResponse> {
@@ -21,10 +21,14 @@ export class AuthService {
       if (mockResponse.success) {
         return mockResponse.data;
       } else {
-        throw new Error('Erro no login');
+        throw new AuthenticationError('Erro no login', {
+          response: mockResponse,
+        });
       }
     } else {
-      throw new Error('Credenciais inválidas');
+      throw new ValidationError('Credenciais inválidas', {
+        email: credentials.email,
+      });
     }
   }
 }
