@@ -17,7 +17,7 @@ import { MaskedInput, DatePicker } from '../../components/index';
 import { useAuthStore } from '../../store/auth/authStore';
 import { masks } from '../../utils/masks';
 
-export const TransferScreen = () => {
+const TransferScreen = () => {
   const navigation = useNavigation();
   const { user } = useAuthStore();
   const [isLoading, setIsLoading] = useState(false);
@@ -199,3 +199,5 @@ export const TransferScreen = () => {
     </View>
   );
 };
+
+export default TransferScreen;

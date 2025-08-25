@@ -3,7 +3,7 @@ import { View, ScrollView, RefreshControl, Button } from 'react-native';
 import { BalanceCard, QuickActions, UserInfo } from '../../components/index';
 import { useAuth } from '../../hooks';
 
-export const HomeScreen = () => {
+const HomeScreen = () => {
   const [refreshing, setRefreshing] = React.useState(false);
   const { logout } = useAuth();
 
@@ -28,3 +28,5 @@ export const HomeScreen = () => {
     </ScrollView>
   );
 };
+
+export default HomeScreen;

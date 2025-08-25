@@ -1,11 +1,19 @@
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { HomeScreen } from '../screens/home/HomeScreen';
-import { TransfersScreen } from '../screens/transfers/TransfersScreen';
-import { TransferScreen } from '../screens/transfer/TransferScreen';
-import { ProfileScreen } from '../screens/profile/ProfileScreen';
+import { lazyScreen } from '../utils/lazyLoad';
 
 const Tab = createBottomTabNavigator();
+
+const HomeScreen = lazyScreen(() => import('../screens/home/HomeScreen'));
+const TransfersScreen = lazyScreen(
+  () => import('../screens/transfers/TransfersScreen')
+);
+const TransferScreen = lazyScreen(
+  () => import('../screens/transfer/TransferScreen')
+);
+const ProfileScreen = lazyScreen(
+  () => import('../screens/profile/ProfileScreen')
+);
 
 export const MainNavigator = () => (
   <Tab.Navigator>

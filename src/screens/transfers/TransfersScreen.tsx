@@ -12,7 +12,7 @@ import { TransferFilters, TransferItem } from '../../components/index';
 import { useNavigation } from '@react-navigation/native';
 import { Transfer } from '../../types';
 
-export const TransfersScreen = () => {
+const TransfersScreen = () => {
   const navigation = useNavigation();
   const [transfers, setTransfers] = useState<Transfer[]>([]);
   const [filteredTransfers, setFilteredTransfers] = useState<Transfer[]>([]);
@@ -155,3 +155,5 @@ export const TransfersScreen = () => {
     </View>
   );
 };
+
+export default TransfersScreen;

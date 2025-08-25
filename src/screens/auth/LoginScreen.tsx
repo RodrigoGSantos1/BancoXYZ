@@ -23,7 +23,7 @@ const loginSchema = z.object({
 
 type LoginFormData = z.infer<typeof loginSchema>;
 
-export const LoginScreen = () => {
+const LoginScreen = () => {
   const { login, isLoading, error, clearError } = useAuthStore();
   const [rememberMe, setRememberMe] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
@@ -196,3 +196,5 @@ export const LoginScreen = () => {
     </ScrollView>
   );
 };
+
+export default LoginScreen;
