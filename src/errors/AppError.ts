@@ -30,3 +30,17 @@ export class NetworkError extends AppError {
     this.name = 'NetworkError';
   }
 }
+
+export class TransferError extends AppError {
+  constructor(message: string, details?: Record<string, any>) {
+    super(message, 'TRANSFER_ERROR', 400, details);
+    this.name = 'TransferError';
+  }
+}
+
+export class BalanceError extends AppError {
+  constructor(message: string, details?: Record<string, any>) {
+    super(message, 'BALANCE_ERROR', 400, details);
+    this.name = 'BalanceError';
+  }
+}

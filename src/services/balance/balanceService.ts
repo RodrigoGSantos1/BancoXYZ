@@ -1,14 +1,14 @@
 import { MockService } from '../mock/mockService';
 import { useAuthStore } from '../../store/auth/authStore';
-
 import { BalanceResponse } from '../../types';
+import { AuthenticationError, BalanceError } from '../../errors/AppError';
 
 export class BalanceService {
   static async getBalance(): Promise<BalanceResponse> {
     const user = useAuthStore.getState().user;
 
     if (!user) {
-      throw new Error('Usuário não autenticado');
+      throw new AuthenticationError('Usuário não autenticado');
     }
 
     const mockUser = MockService.getMockUser(user.email);
@@ -23,7 +23,9 @@ export class BalanceService {
     if (response.success) {
       return response.data;
     } else {
-      throw new Error(response.message || 'Erro ao buscar saldo');
+      throw new BalanceError(response.message || 'Erro ao buscar saldo', {
+        response,
+      });
     }
   }
 }

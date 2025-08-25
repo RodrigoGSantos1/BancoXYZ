@@ -1,25 +1,37 @@
 import { MockService } from '../mock/mockService';
-
 import { TransferRequest, TransferResponse, TransferItem } from '../../types';
+import {
+  TransferError,
+  ValidationError,
+  NetworkError,
+} from '../../errors/AppError';
 
 export class TransferService {
   static async createTransfer(
     data: TransferRequest
   ): Promise<TransferResponse> {
     if (!data.value || data.value <= 0) {
-      throw new Error('Valor deve ser maior que zero');
+      throw new ValidationError('Valor deve ser maior que zero', {
+        value: data.value,
+      });
     }
 
     if (!data.currency || data.currency.trim() === '') {
-      throw new Error('Moeda é obrigatória');
+      throw new ValidationError('Moeda é obrigatória', {
+        currency: data.currency,
+      });
     }
 
     if (!data.payeerDocument || data.payeerDocument.trim() === '') {
-      throw new Error('Documento do beneficiário é obrigatório');
+      throw new ValidationError('Documento do beneficiário é obrigatório', {
+        document: data.payeerDocument,
+      });
     }
 
     if (!data.transferDate || data.transferDate.trim() === '') {
-      throw new Error('Data da transferência é obrigatória');
+      throw new ValidationError('Data da transferência é obrigatória', {
+        date: data.transferDate,
+      });
     }
 
     const mockData: TransferResponse = {
@@ -33,7 +45,7 @@ export class TransferService {
     if (response.success) {
       return response.data;
     } else {
-      throw new Error('Erro ao criar transferência');
+      throw new TransferError('Erro ao criar transferência', { response });
     }
   }
 
@@ -66,7 +78,7 @@ export class TransferService {
     if (response.success) {
       return response.data;
     } else {
-      throw new Error('Erro ao buscar transferências');
+      throw new NetworkError('Erro ao buscar transferências', { response });
     }
   }
 }
