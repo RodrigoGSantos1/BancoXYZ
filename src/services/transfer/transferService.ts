@@ -1,28 +1,6 @@
 import { MockService } from '../mock/mockService';
 
-export interface TransferRequest {
-  value: number;
-  currency: string;
-  payeerDocument: string;
-  transferDate: string;
-}
-
-export interface TransferResponse {
-  status: 'success' | 'error';
-  transferId?: string;
-  message?: string;
-}
-
-export interface TransferItem {
-  id: number;
-  value: number;
-  date: string;
-  currency: string;
-  payeer: {
-    document: string;
-    name: string;
-  };
-}
+import { TransferRequest, TransferResponse, TransferItem } from '../../types';
 
 export class TransferService {
   static async createTransfer(

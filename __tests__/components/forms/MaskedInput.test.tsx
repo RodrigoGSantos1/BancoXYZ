@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, fireEvent } from '@testing-library/react-native';
-import { MaskedInput } from '../../../src/components/forms/MaskedInput';
+import { MaskedInput } from '../../../src/components/index';
 
 const mockMask = (value: string) => `masked_${value}`;
 const mockUnmask = (value: string) => value.replace('masked_', '');

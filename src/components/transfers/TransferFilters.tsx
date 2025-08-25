@@ -2,12 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity } from 'react-native';
 import { Search, Filter } from 'lucide-react-native';
 
-interface TransferFiltersProps {
-  onSearch: (query: string) => void;
-  onFilterByValue: (minValue: number, maxValue: number) => void;
-  onFilterByDate: (startDate: string, endDate: string) => void;
-  onClearFilters: () => void;
-}
+import { TransferFiltersProps } from '../../types';
 
 export const TransferFilters: React.FC<TransferFiltersProps> = ({
   onSearch,

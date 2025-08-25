@@ -13,8 +13,7 @@ import { Send, ArrowLeft } from 'lucide-react-native';
 import { useNavigation } from '@react-navigation/native';
 import { transferSchema, TransferFormData } from '../../schemas/transferSchema';
 import { TransferService } from '../../services/transfer/transferService';
-import { DatePicker } from '../../components/forms/DatePicker';
-import { MaskedInput } from '../../components/forms/MaskedInput';
+import { MaskedInput, DatePicker } from '../../components/index';
 import { useAuthStore } from '../../store/auth/authStore';
 import { masks } from '../../utils/masks';
 

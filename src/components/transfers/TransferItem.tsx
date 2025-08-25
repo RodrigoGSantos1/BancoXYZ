@@ -2,19 +2,7 @@ import React from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import { ArrowRight, TrendingDown } from 'lucide-react-native';
 
-interface TransferItemProps {
-  transfer: {
-    id: number;
-    value: number;
-    date: string;
-    currency: string;
-    payeer: {
-      document: string;
-      name: string;
-    };
-  };
-  onPress: () => void;
-}
+import { TransferItemProps } from '../../types';
 
 export const TransferItem: React.FC<TransferItemProps> = ({
   transfer,

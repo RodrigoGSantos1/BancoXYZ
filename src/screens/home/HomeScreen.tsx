@@ -1,8 +1,6 @@
 import React from 'react';
 import { View, ScrollView, RefreshControl, Button } from 'react-native';
-import { BalanceCard } from '../../components/home/BalanceCard';
-import { QuickActions } from '../../components/home/QuickActions';
-import { UserInfo } from '../../components/home/UserInfo';
+import { BalanceCard, QuickActions, UserInfo } from '../../components/index';
 import { useAuth } from '../../hooks';
 
 export const HomeScreen = () => {

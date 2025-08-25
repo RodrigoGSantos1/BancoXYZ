@@ -1,10 +1,7 @@
 import { MockService } from '../mock/mockService';
 import { useAuthStore } from '../../store/auth/authStore';
 
-export interface BalanceResponse {
-  currency: string;
-  accountBalance: number;
-}
+import { BalanceResponse } from '../../types';
 
 export class BalanceService {
   static async getBalance(): Promise<BalanceResponse> {

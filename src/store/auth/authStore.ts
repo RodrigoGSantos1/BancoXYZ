@@ -1,22 +1,7 @@
 import { createStore } from '../index';
 import { AuthService } from '../../services/auth/authService';
 import { MockService } from '../../services/mock/mockService';
-
-interface User {
-  id: string;
-  email: string;
-  name: string;
-  balance: number;
-  accountNumber: string;
-}
-
-interface AuthState {
-  user: User | null;
-  token: string | null;
-  isAuthenticated: boolean;
-  isLoading: boolean;
-  error: string | null;
-}
+import { AuthState, User } from '../../types';
 
 const initialState: AuthState = {
   user: null,

@@ -8,20 +8,9 @@ import {
 } from 'react-native';
 import { Plus, Calendar } from 'lucide-react-native';
 import { TransferService } from '../../services/transfer/transferService';
-import { TransferFilters } from '../../components/transfers/TransferFilters';
-import { TransferItem } from '../../components/transfers/TransferItem';
+import { TransferFilters, TransferItem } from '../../components/index';
 import { useNavigation } from '@react-navigation/native';
-
-interface Transfer {
-  id: number;
-  value: number;
-  date: string;
-  currency: string;
-  payeer: {
-    document: string;
-    name: string;
-  };
-}
+import { Transfer } from '../../types';
 
 export const TransfersScreen = () => {
   const navigation = useNavigation();
@@ -95,7 +84,6 @@ export const TransfersScreen = () => {
   };
 
   const handleTransferPress = (transfer: Transfer) => {
-    // Aqui você pode navegar para uma tela de detalhes
     console.log('Transferência selecionada:', transfer);
   };
 

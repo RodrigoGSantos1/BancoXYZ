@@ -1,18 +1,6 @@
 import { MockService } from '../mock/mockService';
 
-export interface LoginRequest {
-  email: string;
-  password: string;
-}
-
-export interface LoginResponse {
-  token: string;
-  user: {
-    id: number;
-    name: string;
-    email: string;
-  };
-}
+import { LoginRequest, LoginResponse } from '../../types';
 
 export class AuthService {
   static async login(credentials: LoginRequest): Promise<LoginResponse> {
