@@ -6,8 +6,9 @@ import {
   RefreshControl,
   TouchableOpacity,
   ListRenderItem,
+  Alert,
 } from 'react-native';
-import { Calendar, Plus } from 'lucide-react-native';
+import { Calendar, Plus, FileX, RefreshCw } from 'lucide-react-native';
 import { TransferService } from '../../services/transfer/transferService';
 import { TransferFilters, TransferItem } from '../../components/index';
 import { useNavigation } from '@react-navigation/native';
@@ -28,7 +29,10 @@ const TransfersScreen = () => {
       setTransfers(response);
       setFilteredTransfers(response);
     } catch (error) {
-      console.error('Erro ao buscar transferências:', error);
+      Alert.alert(
+        'Erro',
+        'Não foi possível carregar as transferências. Tente novamente.'
+      );
     } finally {
       setIsLoading(false);
     }
@@ -150,25 +154,41 @@ const TransfersScreen = () => {
 
   const ListEmptyComponent = useMemo(
     () => (
-      <View className="items-center py-8">
-        <Text className="text-gray-600">
-          {isLoading
-            ? 'Carregando transferências...'
-            : 'Nenhuma transferência encontrada'}
-        </Text>
+      <View className="items-center justify-center py-16">
+        {isLoading ? (
+          <View className="items-center">
+            <RefreshCw size={48} color="#6B7280" className="mb-4" />
+            <Text className="text-gray-600 text-base">
+              Carregando transferências...
+            </Text>
+          </View>
+        ) : (
+          <View className="items-center">
+            <FileX size={48} color="#6B7280" className="mb-4" />
+            <Text className="text-gray-600 text-base font-medium mb-2">
+              Nenhuma transferência encontrada
+            </Text>
+            <Text className="text-gray-500 text-center px-8">
+              {filteredTransfers.length === 0 && transfers.length > 0
+                ? 'Tente ajustar os filtros para ver mais resultados'
+                : 'Faça sua primeira transferência usando o botão +'}
+            </Text>
+          </View>
+        )}
       </View>
     ),
-    [isLoading]
+    [isLoading, filteredTransfers.length, transfers.length]
   );
 
   return (
     <View className="flex-1 bg-gray-100">
       <View className="p-4">
         <TouchableOpacity
-          className="bg-primary-500 rounded-full w-10 h-10 items-center justify-center self-end"
+          className="bg-primary-500 rounded-full w-12 h-12 items-center justify-center self-end shadow-lg"
           onPress={handleNewTransfer}
+          activeOpacity={0.7}
         >
-          <Plus size={20} color="white" />
+          <Plus size={24} color="white" />
         </TouchableOpacity>
       </View>
 
