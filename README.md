@@ -161,12 +161,6 @@ Antes de começar, certifique-se de ter instalado:
    npm install
    ```
 
-3. **Configure as variáveis de ambiente**
-   ```bash
-   cp .env.example .env
-   # Edite o arquivo .env com suas configurações
-   ```
-
 ## 🚀 Como Executar
 
 ### Desenvolvimento
@@ -222,11 +216,6 @@ npm run type-check
 ```bash
 # Verificação completa antes do build
 npm run prebuild
-
-# Build para produção
-expo build:android
-expo build:ios
-```
 
 ## 🧪 Testes
 
@@ -289,3 +278,4 @@ Sistema de design utilitário com configuração personalizada para React Native
 ---
 
 **BancoXYZ** - Transformando a experiência bancária digital 🚀
+```
