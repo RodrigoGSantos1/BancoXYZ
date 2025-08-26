@@ -3,6 +3,8 @@ import { View, Text, TextInput, TouchableOpacity } from 'react-native';
 import { Search, Filter } from 'lucide-react-native';
 
 import { TransferFiltersProps } from '../../types';
+import { MoneyInput } from '../forms/MoneyInput';
+import { DatePicker } from '../forms/DatePicker';
 
 export const TransferFilters: React.FC<TransferFiltersProps> = ({
   onSearch,
@@ -23,9 +25,9 @@ export const TransferFilters: React.FC<TransferFiltersProps> = ({
   };
 
   const handleValueFilter = () => {
-    const min = parseFloat(minValue) || 0;
-    const max = parseFloat(maxValue) || Infinity;
-    onFilterByValue(min, max);
+    const min = parseInt(minValue, 10) || 0;
+    const max = parseInt(maxValue, 10) || Infinity;
+    onFilterByValue(min / 100, max / 100);
   };
 
   const handleDateFilter = () => {
@@ -70,22 +72,18 @@ export const TransferFilters: React.FC<TransferFiltersProps> = ({
 
           <View className="flex-row space-x-3 mb-3">
             <View className="flex-1">
-              <Text className="text-gray-600 text-sm mb-1">Valor Mínimo</Text>
-              <TextInput
-                className="bg-gray-100 rounded-lg px-3 py-2 text-gray-800"
-                placeholder="0,00"
-                value={minValue}
-                onChangeText={setMinValue}
+              <MoneyInput
+                label="Valor Mínimo"
+                value={parseInt(minValue) || 0}
+                onValueChange={(value) => setMinValue(value.toString())}
                 keyboardType="numeric"
               />
             </View>
             <View className="flex-1">
-              <Text className="text-gray-600 text-sm mb-1">Valor Máximo</Text>
-              <TextInput
-                className="bg-gray-100 rounded-lg px-3 py-2 text-gray-800"
-                placeholder="1000,00"
-                value={maxValue}
-                onChangeText={setMaxValue}
+              <MoneyInput
+                label="Valor Máximo"
+                value={parseInt(maxValue) || 0}
+                onValueChange={(value) => setMaxValue(value.toString())}
                 keyboardType="numeric"
               />
             </View>
@@ -93,21 +91,21 @@ export const TransferFilters: React.FC<TransferFiltersProps> = ({
 
           <View className="flex-row space-x-3 mb-4">
             <View className="flex-1">
-              <Text className="text-gray-600 text-sm mb-1">Data Início</Text>
-              <TextInput
-                className="bg-gray-100 rounded-lg px-3 py-2 text-gray-800"
-                placeholder="2024-01-01"
+              <DatePicker
+                label="Data Início"
+                placeholder="Selecione"
                 value={startDate}
-                onChangeText={setStartDate}
+                onChange={setStartDate}
+                maximumDate={endDate ? new Date(endDate) : undefined}
               />
             </View>
             <View className="flex-1">
-              <Text className="text-gray-600 text-sm mb-1">Data Fim</Text>
-              <TextInput
-                className="bg-gray-100 rounded-lg px-3 py-2 text-gray-800"
-                placeholder="2024-12-31"
+              <DatePicker
+                label="Data Fim"
+                placeholder="Selecione"
                 value={endDate}
-                onChangeText={setEndDate}
+                onChange={setEndDate}
+                minimumDate={startDate ? new Date(startDate) : undefined}
               />
             </View>
           </View>

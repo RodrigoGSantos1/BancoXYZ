@@ -13,7 +13,8 @@ import { Send } from 'lucide-react-native';
 import { useNavigation } from '@react-navigation/native';
 import { transferSchema, TransferFormData } from '../../schemas/transferSchema';
 import { TransferService } from '../../services/transfer/transferService';
-import { MaskedInput, DatePicker } from '../../components/index';
+import { MoneyInput, DatePicker } from '../../components/index';
+import { MaskedInput } from '../../components/forms/MaskedInput';
 import { useAuthContext } from '../../providers/AuthProvider';
 import { masks } from '../../utils/masks';
 
@@ -80,15 +81,10 @@ const TransferScreen = () => {
             control={control}
             name="value"
             render={({ field: { value } }) => (
-              <MaskedInput
+              <MoneyInput
                 label="Valor"
-                placeholder="0,00"
-                mask={masks.formatCurrencyInput}
-                unmask={masks.currencyToNumber}
-                onValueChange={(newValue) =>
-                  setValue('value', newValue as number)
-                }
-                value={value}
+                value={value || 0}
+                onValueChange={(newValue) => setValue('value', newValue)}
                 keyboardType="numeric"
                 error={errors.value?.message}
               />

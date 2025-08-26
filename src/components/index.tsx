@@ -1,5 +1,5 @@
 export { ProtectedRoute } from './auth/ProtectedRoute';
-export { MaskedInput } from './forms/MaskedInput';
+export { MoneyInput } from './forms/MoneyInput';
 export { DatePicker } from './forms/DatePicker';
 export { BalanceCard } from './home/BalanceCard';
 export { QuickActions } from './home/QuickActions';

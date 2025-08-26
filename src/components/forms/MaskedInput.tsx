@@ -32,8 +32,9 @@ export const MaskedInput: React.FC<MaskedInputProps> = ({
   }, [value, mask]);
 
   const handleChangeText = (text: string) => {
-    setDisplayValue(text);
-    const unmaskedValue = unmask(text);
+    const maskedValue = mask(text);
+    setDisplayValue(maskedValue);
+    const unmaskedValue = unmask(maskedValue);
     onValueChange(unmaskedValue);
   };
 

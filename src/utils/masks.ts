@@ -1,25 +1,4 @@
 export const masks = {
-  formatCurrencyInput: (value: string): string => {
-    const numericValue = value.replace(/\D/g, '').padStart(3, '0');
-    const length = numericValue.length;
-    const integerPart = numericValue.slice(0, length - 2);
-    const decimalPart = numericValue.slice(length - 2);
-
-    const formattedInteger = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
-    return `${formattedInteger},${decimalPart}`;
-  },
-
-  currencyToNumber: (value: string): number => {
-    if (!value || value.trim() === '') {
-      return 0;
-    }
-    const numericValue = value.replace(/\D/g, '');
-    if (numericValue === '') {
-      return 0;
-    }
-    return parseInt(numericValue, 10) / 100;
-  },
-
   cpf: (value: string): string => {
     const numericValue = value.replace(/\D/g, '');
 
