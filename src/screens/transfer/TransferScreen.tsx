@@ -17,6 +17,9 @@ import { MoneyInput, DatePicker } from '../../components/index';
 import { MaskedInput } from '../../components/forms/MaskedInput';
 import { useAuthContext } from '../../providers/AuthProvider';
 import { masks } from '../../utils/masks';
+import { useAppDispatch } from '../../hooks/useRedux';
+import { updateBalance } from '../../store/slices/balanceSlice';
+import { createTransferSuccess } from '../../store/slices/transferSlice';
 
 const TransferScreen = () => {
   const navigation = useNavigation();
@@ -41,6 +44,8 @@ const TransferScreen = () => {
     },
   });
 
+  const dispatch = useAppDispatch();
+
   const onSubmit = async (data: TransferFormData) => {
     if (data.value > (user?.balance || 0)) {
       Alert.alert('Erro', 'Saldo insuficiente para realizar a transferência.');
@@ -49,7 +54,24 @@ const TransferScreen = () => {
 
     setIsLoading(true);
     try {
-      await TransferService.createTransfer(data);
+      const response = await TransferService.createTransfer(data);
+      dispatch(updateBalance({ amount: data.value, operation: 'debit' }));
+      dispatch(
+        createTransferSuccess({
+          id: parseInt(
+            response.transferId?.split('-')[1] || Date.now().toString(),
+            10
+          ),
+          value: data.value,
+          date: data.transferDate,
+          currency: data.currency,
+          payeer: {
+            document: data.payeerDocument,
+            name: data.payeerName,
+          },
+        })
+      );
+
       Alert.alert('Sucesso', 'Transferência realizada com sucesso!', [
         {
           text: 'OK',
@@ -70,12 +92,22 @@ const TransferScreen = () => {
   };
 
   return (
-    <View className="flex-1 bg-gray-100">
-      <ScrollView className="flex-1 p-4">
-        <View className="bg-white rounded-2xl p-6 shadow-sm">
-          <Text className="text-2xl font-bold text-gray-800 mb-6">
-            Dados da transferência
-          </Text>
+    <View className="flex-1 bg-gray-50">
+      <ScrollView className="flex-1 px-4 py-6">
+        <View className="bg-white rounded-2xl p-6 shadow">
+          <View className="flex-row items-center mb-8">
+            <View className="flex-1">
+              <Text className="text-2xl font-bold text-gray-800">
+                Nova Transferência
+              </Text>
+              <Text className="text-gray-500 mt-1">
+                Saldo disponível: R${' '}
+                {(user?.balance || 0).toLocaleString('pt-BR', {
+                  minimumFractionDigits: 2,
+                })}
+              </Text>
+            </View>
+          </View>
 
           <Controller
             control={control}
@@ -174,16 +206,24 @@ const TransferScreen = () => {
             )}
           />
 
-          <TouchableOpacity
-            className="bg-primary-500 rounded-xl p-4 flex-row items-center justify-center"
-            onPress={handleSubmit(onSubmit)}
-            disabled={isLoading}
-          >
-            <Send size={20} color="white" className="mr-2" />
-            <Text className="text-white text-center font-bold text-lg ml-2">
-              {isLoading ? 'Processando...' : 'Realizar transferência'}
+          <View className="mt-8">
+            <TouchableOpacity
+              className={`rounded-xl py-4 flex-row items-center justify-center ${
+                isLoading ? 'bg-primary-400' : 'bg-primary-500'
+              }`}
+              onPress={handleSubmit(onSubmit)}
+              disabled={isLoading}
+            >
+              <Send size={20} color="white" />
+              <Text className="text-white text-center font-bold text-lg ml-3">
+                {isLoading ? 'Processando...' : 'Realizar transferência'}
+              </Text>
+            </TouchableOpacity>
+            <Text className="text-gray-500 text-center text-sm mt-4">
+              Ao confirmar, você concorda com os termos e condições da
+              transferência.
             </Text>
-          </TouchableOpacity>
+          </View>
         </View>
       </ScrollView>
     </View>
