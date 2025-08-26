@@ -1,6 +1,12 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity } from 'react-native';
-import { Search, Filter } from 'lucide-react-native';
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  ActivityIndicator,
+} from 'react-native';
+import { Search, Filter, Check } from 'lucide-react-native';
 
 import { TransferFiltersProps } from '../../types';
 import { MoneyInput } from '../forms/MoneyInput';
@@ -11,6 +17,8 @@ export const TransferFilters: React.FC<TransferFiltersProps> = ({
   onFilterByValue,
   onFilterByDate,
   onClearFilters,
+  isLoading = false,
+  hasActiveFilters = false,
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [showFilters, setShowFilters] = useState(false);
@@ -153,9 +161,18 @@ export const TransferFilters: React.FC<TransferFiltersProps> = ({
                 endDate === ''
               }
             >
-              <Text className="text-white text-center font-semibold">
-                Aplicar Filtros
-              </Text>
+              {isLoading ? (
+                <ActivityIndicator color="white" />
+              ) : (
+                <View className="flex-row items-center justify-center">
+                  {hasActiveFilters && (
+                    <Check size={18} color="white" className="mr-2" />
+                  )}
+                  <Text className="text-white text-center font-semibold">
+                    {hasActiveFilters ? 'Filtros Aplicados' : 'Aplicar Filtros'}
+                  </Text>
+                </View>
+              )}
             </TouchableOpacity>
           </View>
         </View>

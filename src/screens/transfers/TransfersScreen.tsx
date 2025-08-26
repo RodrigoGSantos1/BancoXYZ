@@ -109,6 +109,10 @@ const TransfersScreen = () => {
     [handleTransferPress]
   );
 
+  const hasActiveFilters = useMemo(() => {
+    return filteredTransfers.length !== transfers.length;
+  }, [filteredTransfers.length, transfers.length]);
+
   const ListHeaderComponent = useMemo(
     () => (
       <>
@@ -117,6 +121,8 @@ const TransfersScreen = () => {
           onFilterByValue={handleFilterByValue}
           onFilterByDate={handleFilterByDate}
           onClearFilters={handleClearFilters}
+          isLoading={isLoading}
+          hasActiveFilters={hasActiveFilters}
         />
         <View className="flex-row items-center justify-between mb-4 px-4">
           <Text className="text-gray-700 font-semibold">
@@ -137,6 +143,8 @@ const TransfersScreen = () => {
       handleFilterByDate,
       handleClearFilters,
       filteredTransfers.length,
+      hasActiveFilters,
+      isLoading,
     ]
   );
 
@@ -168,7 +176,7 @@ const TransfersScreen = () => {
         data={filteredTransfers}
         renderItem={renderItem}
         keyExtractor={(item) => item.id.toString()}
-        contentContainerStyle={{ paddingHorizontal: 16 }}
+        contentContainerStyle="px-4"
         getItemLayout={getTransferItemLayout}
         removeClippedSubviews
         maxToRenderPerBatch={5}

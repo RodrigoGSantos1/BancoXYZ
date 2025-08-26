@@ -6,10 +6,11 @@ import {
   TouchableOpacity,
   ScrollView,
   Alert,
+  ActivityIndicator,
 } from 'react-native';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Send } from 'lucide-react-native';
+import { Send, Check } from 'lucide-react-native';
 import { useNavigation } from '@react-navigation/native';
 import { transferSchema, TransferFormData } from '../../schemas/transferSchema';
 import { TransferService } from '../../services/transfer/transferService';
@@ -25,6 +26,7 @@ const TransferScreen = () => {
   const navigation = useNavigation();
   const { user } = useAuthContext();
   const [isLoading, setIsLoading] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
 
   const {
     control,
@@ -72,15 +74,11 @@ const TransferScreen = () => {
         })
       );
 
-      Alert.alert('Sucesso', 'Transferência realizada com sucesso!', [
-        {
-          text: 'OK',
-          onPress: () => {
-            reset();
-            navigation.goBack();
-          },
-        },
-      ]);
+      setIsSuccess(true);
+      setTimeout(() => {
+        reset();
+        navigation.goBack();
+      }, 2000);
     } catch (error) {
       Alert.alert(
         'Erro',
@@ -209,15 +207,32 @@ const TransferScreen = () => {
           <View className="mt-8">
             <TouchableOpacity
               className={`rounded-xl py-4 flex-row items-center justify-center ${
-                isLoading ? 'bg-primary-400' : 'bg-primary-500'
+                isSuccess
+                  ? 'bg-green-500'
+                  : isLoading
+                    ? 'bg-primary-400'
+                    : 'bg-primary-500'
               }`}
               onPress={handleSubmit(onSubmit)}
-              disabled={isLoading}
+              disabled={isLoading || isSuccess}
             >
-              <Send size={20} color="white" />
-              <Text className="text-white text-center font-bold text-lg ml-3">
-                {isLoading ? 'Processando...' : 'Realizar transferência'}
-              </Text>
+              {isLoading ? (
+                <ActivityIndicator color="white" />
+              ) : isSuccess ? (
+                <View className="flex-row items-center">
+                  <Check size={20} color="white" />
+                  <Text className="text-white text-center font-bold text-lg ml-3">
+                    Transferência Realizada
+                  </Text>
+                </View>
+              ) : (
+                <View className="flex-row items-center">
+                  <Send size={20} color="white" />
+                  <Text className="text-white text-center font-bold text-lg ml-3">
+                    Realizar transferência
+                  </Text>
+                </View>
+              )}
             </TouchableOpacity>
             <Text className="text-gray-500 text-center text-sm mt-4">
               Ao confirmar, você concorda com os termos e condições da
