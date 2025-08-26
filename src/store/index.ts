@@ -9,7 +9,7 @@ import balanceReducer from './slices/balanceSlice';
 const persistConfig = {
   key: 'root',
   storage: AsyncStorage,
-  whitelist: ['auth'], // Apenas auth será persistido
+  whitelist: ['auth'],
 };
 
 const rootReducer = combineReducers({

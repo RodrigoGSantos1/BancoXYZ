@@ -5,7 +5,7 @@ import { MoneyInput } from '../../../src/components/forms/MoneyInput';
 describe('MoneyInput', () => {
   const mockProps = {
     label: 'Valor',
-    value: 1500,
+    value: 15.0,
     onValueChange: jest.fn(),
     error: undefined,
     placeholder: 'Digite um valor',
@@ -26,7 +26,7 @@ describe('MoneyInput', () => {
 
   it('formats value correctly', () => {
     const { getByDisplayValue } = render(
-      <MoneyInput {...mockProps} value={150075} />
+      <MoneyInput {...mockProps} value={1500.75} />
     );
 
     expect(getByDisplayValue('1.500,75')).toBeTruthy();
@@ -36,8 +36,18 @@ describe('MoneyInput', () => {
     const { getByDisplayValue } = render(<MoneyInput {...mockProps} />);
     const input = getByDisplayValue('15,00');
 
-    fireEvent.changeText(input, '1.234,56');
-    expect(mockProps.onValueChange).toHaveBeenCalledWith(123456);
+    fireEvent.changeText(input, '123456');
+    expect(mockProps.onValueChange).toHaveBeenCalledWith(1234.56);
+  });
+
+  it('handles zero value correctly', () => {
+    const { getByDisplayValue } = render(
+      <MoneyInput {...mockProps} value={0} />
+    );
+    const input = getByDisplayValue('0,00');
+
+    fireEvent.changeText(input, '2000');
+    expect(mockProps.onValueChange).toHaveBeenCalledWith(20.0);
   });
 
   it('shows error message when error prop is provided', () => {

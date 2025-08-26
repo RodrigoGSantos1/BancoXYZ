@@ -3,42 +3,73 @@ import { View, Text, TouchableOpacity } from 'react-native';
 import { RefreshCw, Eye, EyeOff } from 'lucide-react-native';
 import { BalanceService } from '../../services/balance/balanceService';
 import { useAuthContext } from '../../providers/AuthProvider';
+import { useAppDispatch, useAppSelector } from '../../hooks/useRedux';
+import {
+  fetchBalanceSuccess,
+  fetchBalanceStart,
+  fetchBalanceFailure,
+} from '../../store/slices/balanceSlice';
+import { updateUserBalance } from '../../store/slices/authSlice';
 
 export const BalanceCard = React.memo(() => {
   const { user, isAuthenticated } = useAuthContext();
-  const [balance, setBalance] = useState(0);
+  const dispatch = useAppDispatch();
+  const { balance: reduxBalance, isLoading } = useAppSelector(
+    (state) => state.balance
+  );
   const [currency, setCurrency] = useState('BRL');
-  const [isLoading, setIsLoading] = useState(false);
   const [showBalance, setShowBalance] = useState(true);
+
+  const currentBalance = reduxBalance || user?.balance || 0;
 
   const fetchBalance = useCallback(async () => {
     if (!user || !isAuthenticated) {
       return;
     }
 
-    setIsLoading(true);
+    dispatch(fetchBalanceStart());
     try {
       const response = await BalanceService.getBalance();
-      setBalance(response.accountBalance);
+      dispatch(
+        fetchBalanceSuccess({
+          balance: response.accountBalance,
+          accountNumber: user.accountNumber || '',
+        })
+      );
+
+      if (user && response.accountBalance !== user.balance) {
+        const diff = response.accountBalance - (user.balance || 0);
+        dispatch(
+          updateUserBalance({
+            amount: Math.abs(diff),
+            operation: diff >= 0 ? 'credit' : 'debit',
+          })
+        );
+      }
+
       setCurrency(response.currency);
     } catch (error) {
-      setBalance(user.balance || 0);
-    } finally {
-      setIsLoading(false);
+      dispatch(fetchBalanceFailure('Erro ao buscar saldo'));
     }
-  }, [user, isAuthenticated]);
+  }, [user, isAuthenticated, dispatch]);
 
   const formattedBalance = useMemo(() => {
-    return balance.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
-  }, [balance]);
+    return currentBalance.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
+  }, [currentBalance]);
 
   useEffect(() => {
     if (user && isAuthenticated) {
-      setBalance(user.balance || 0);
+      dispatch(
+        fetchBalanceSuccess({
+          balance: user.balance || 0,
+          accountNumber: user.accountNumber || '',
+        })
+      );
+
       const timer = setTimeout(fetchBalance, 1000);
       return () => clearTimeout(timer);
     }
-  }, [user, isAuthenticated, fetchBalance]);
+  }, [user, isAuthenticated, fetchBalance, dispatch]);
 
   if (!user || !isAuthenticated) {
     return null;

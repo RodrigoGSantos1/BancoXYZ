@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, Modal, Platform } from 'react-native';
 import { Calendar } from 'lucide-react-native';
 import DateTimePicker, {
@@ -28,20 +28,49 @@ export const DatePicker: React.FC<DatePickerProps> = ({
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(
     value ? new Date(value) : undefined
   );
+  const [tempDate, setTempDate] = useState<Date>(new Date());
+
+  useEffect(() => {
+    if (value) {
+      const date = new Date(value);
+      setSelectedDate(date);
+      setTempDate(date);
+    }
+  }, [value]);
 
   const formatDate = (date: Date) => {
     return date.toLocaleDateString('pt-BR');
   };
 
   const handleDateChange = (event: DateTimePickerEvent, date?: Date) => {
-    setIsVisible(Platform.OS === 'ios');
+    if (Platform.OS === 'android') {
+      setIsVisible(false);
+    }
+
     if (event.type === 'set' && date) {
-      setSelectedDate(date);
-      onChange(date.toISOString().split('T')[0]);
+      if (Platform.OS === 'android') {
+        setSelectedDate(date);
+        setTempDate(date);
+        onChange(date.toISOString().split('T')[0]);
+      } else {
+        setTempDate(date);
+      }
     }
   };
 
+  const confirmDate = () => {
+    setSelectedDate(tempDate);
+    onChange(tempDate.toISOString().split('T')[0]);
+    setIsVisible(false);
+  };
+
+  const cancelDate = () => {
+    setTempDate(selectedDate || new Date());
+    setIsVisible(false);
+  };
+
   const showDatePicker = () => {
+    setTempDate(selectedDate || new Date());
     setIsVisible(true);
   };
 
@@ -67,33 +96,61 @@ export const DatePicker: React.FC<DatePickerProps> = ({
 
       {isVisible &&
         (Platform.OS === 'ios' ? (
-          <Modal visible transparent animationType="fade">
-            <View className="flex-1 bg-black bg-opacity-50 justify-end">
-              <View className="bg-white rounded-t-2xl">
-                <View className="flex-row justify-between items-center p-4 border-b border-gray-200">
-                  <TouchableOpacity onPress={() => setIsVisible(false)}>
-                    <Text className="text-primary-500 font-medium">
+          <Modal visible transparent animationType="slide">
+            <View
+              style={{
+                flex: 1,
+                backgroundColor: 'rgba(0, 0, 0, 0.5)',
+                justifyContent: 'flex-end',
+              }}
+            >
+              <View
+                style={{
+                  backgroundColor: 'white',
+                  borderTopLeftRadius: 20,
+                  borderTopRightRadius: 20,
+                  paddingBottom: 34,
+                }}
+              >
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    paddingHorizontal: 20,
+                    paddingVertical: 16,
+                    borderBottomWidth: 1,
+                    borderBottomColor: '#E5E7EB',
+                  }}
+                >
+                  <TouchableOpacity onPress={cancelDate}>
+                    <Text style={{ color: '#007AFF', fontSize: 17 }}>
                       Cancelar
                     </Text>
                   </TouchableOpacity>
-                  <Text className="text-gray-800 font-semibold">
-                    Selecionar Data
-                  </Text>
-                  <TouchableOpacity
-                    onPress={() => {
-                      if (selectedDate) {
-                        onChange(selectedDate.toISOString().split('T')[0]);
-                      }
-                      setIsVisible(false);
+                  <Text
+                    style={{
+                      color: '#000000',
+                      fontWeight: '600',
+                      fontSize: 17,
                     }}
                   >
-                    <Text className="text-primary-500 font-medium">
+                    Selecionar Data
+                  </Text>
+                  <TouchableOpacity onPress={confirmDate}>
+                    <Text
+                      style={{
+                        color: '#007AFF',
+                        fontSize: 17,
+                        fontWeight: '600',
+                      }}
+                    >
                       Confirmar
                     </Text>
                   </TouchableOpacity>
                 </View>
                 <DateTimePicker
-                  value={selectedDate || new Date()}
+                  value={tempDate}
                   mode="date"
                   display="spinner"
                   onChange={handleDateChange}
@@ -106,7 +163,7 @@ export const DatePicker: React.FC<DatePickerProps> = ({
           </Modal>
         ) : (
           <DateTimePicker
-            value={selectedDate || new Date()}
+            value={tempDate}
             mode="date"
             display="default"
             onChange={handleDateChange}

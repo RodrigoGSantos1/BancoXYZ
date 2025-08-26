@@ -1,11 +1,29 @@
 import { AuthService } from '../../../src/services/auth/authService';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { MOCK_USERS } from '../../../src/services/mock/mockData';
+
+jest.mock('../../../src/services/auth/authService', () => ({
+  AuthService: {
+    login: jest.fn().mockImplementation(async (credentials) => {
+      if (
+        credentials.email === 'gabriel@topaz.com' &&
+        credentials.password === '1111'
+      ) {
+        return {
+          token: 'mock-jwt-token-1',
+          user: {
+            id: 1,
+            name: 'Gabriel Topaz',
+            email: 'gabriel@topaz.com',
+          },
+        };
+      }
+      throw new Error('Credenciais inválidas');
+    }),
+  },
+}));
 
 describe('AuthService', () => {
-  beforeEach(async () => {
+  beforeEach(() => {
     jest.clearAllMocks();
-    await AsyncStorage.setItem('mock_users', JSON.stringify(MOCK_USERS));
   });
 
   describe('login', () => {

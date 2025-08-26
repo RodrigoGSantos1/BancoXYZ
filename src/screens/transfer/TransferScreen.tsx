@@ -20,6 +20,7 @@ import { useAuthContext } from '../../providers/AuthProvider';
 import { masks } from '../../utils/masks';
 import { useAppDispatch } from '../../hooks/useRedux';
 import { updateBalance } from '../../store/slices/balanceSlice';
+import { updateUserBalance } from '../../store/slices/authSlice';
 import { createTransferSuccess } from '../../store/slices/transferSlice';
 
 const TransferScreen = () => {
@@ -61,7 +62,10 @@ const TransferScreen = () => {
         user?.email || '',
         parseInt(user?.id || '0', 10)
       );
+
       dispatch(updateBalance({ amount: data.value, operation: 'debit' }));
+      dispatch(updateUserBalance({ amount: data.value, operation: 'debit' }));
+
       dispatch(
         createTransferSuccess({
           id: parseInt(
@@ -80,6 +84,7 @@ const TransferScreen = () => {
 
       setIsSuccess(true);
       setTimeout(() => {
+        setIsSuccess(false);
         reset();
         navigation.goBack();
       }, 2000);
@@ -88,6 +93,7 @@ const TransferScreen = () => {
         'Erro',
         'Não foi possível realizar a transferência. Tente novamente.'
       );
+      setIsSuccess(false);
     } finally {
       setIsLoading(false);
     }
@@ -182,6 +188,7 @@ const TransferScreen = () => {
                 onChange={onChange}
                 label="Data da Transferência"
                 placeholder="Selecione uma data"
+                error={errors.transferDate?.message}
               />
             )}
           />

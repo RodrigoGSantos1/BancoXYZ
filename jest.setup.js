@@ -29,6 +29,12 @@ const originalError = console.error;
 const originalWarn = console.warn;
 
 beforeEach(() => {
+  // Só usar fake timers para testes de componentes
+  const testPath = expect.getState().testPath || '';
+  if (testPath.includes('components/') || testPath.includes('screens/')) {
+    jest.useFakeTimers('legacy');
+  }
+
   console.error = (...args) => {
     if (
       (typeof args[0] === 'string' &&
@@ -42,7 +48,12 @@ beforeEach(() => {
   };
 
   console.warn = (...args) => {
-    if (typeof args[0] === 'string' && args[0].includes('useNativeDriver')) {
+    if (
+      typeof args[0] === 'string' &&
+      (args[0].includes('useNativeDriver') ||
+        args[0].includes('An update to Animated') ||
+        args[0].includes('inside a test was not wrapped in act'))
+    ) {
       return;
     }
     originalWarn.call(console, ...args);
@@ -53,4 +64,5 @@ afterEach(() => {
   console.error = originalError;
   console.warn = originalWarn;
   jest.clearAllTimers();
+  jest.useRealTimers();
 });

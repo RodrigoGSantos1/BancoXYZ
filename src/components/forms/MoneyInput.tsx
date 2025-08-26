@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, TextInputProps } from 'react-native';
 
 interface MoneyInputProps
@@ -18,27 +18,28 @@ export const MoneyInput: React.FC<MoneyInputProps> = ({
   placeholder = '0,00',
   ...props
 }) => {
-  const [inputValue, setInputValue] = useState(formatMoney(value));
-
   function formatMoney(num: number): string {
-    return (num / 100).toLocaleString('pt-BR', {
+    return num.toLocaleString('pt-BR', {
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
     });
   }
 
+  const [inputValue, setInputValue] = useState(formatMoney(value));
+
+  useEffect(() => {
+    setInputValue(formatMoney(value));
+  }, [value]);
+
   function handleChangeText(text: string) {
-    // Remove tudo que não é número
     const numbers = text.replace(/\D/g, '');
 
-    // Converte para centavos
     const cents = numbers ? parseInt(numbers) : 0;
+    const reais = cents / 100;
 
-    // Atualiza o valor formatado
-    setInputValue(formatMoney(cents));
+    setInputValue(formatMoney(reais));
 
-    // Notifica o novo valor em centavos
-    onValueChange(cents);
+    onValueChange(reais);
   }
 
   return (

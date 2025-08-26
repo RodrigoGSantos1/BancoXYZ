@@ -45,9 +45,28 @@ const authSlice = createSlice({
     clearError: (state) => {
       state.error = null;
     },
+    updateUserBalance: (
+      state,
+      action: PayloadAction<{ amount: number; operation: 'credit' | 'debit' }>
+    ) => {
+      if (state.user) {
+        const { amount, operation } = action.payload;
+        if (operation === 'credit') {
+          state.user.balance += amount;
+        } else {
+          state.user.balance -= amount;
+        }
+      }
+    },
   },
 });
 
-export const { loginStart, loginSuccess, loginFailure, logout, clearError } =
-  authSlice.actions;
+export const {
+  loginStart,
+  loginSuccess,
+  loginFailure,
+  logout,
+  clearError,
+  updateUserBalance,
+} = authSlice.actions;
 export default authSlice.reducer;

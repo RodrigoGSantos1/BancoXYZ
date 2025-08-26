@@ -12,11 +12,11 @@ export class BalanceService {
       throw new AuthenticationError('Usuário não autenticado');
     }
 
-    const mockUser = MockService.getMockUser(user.email);
+    const currentBalance = await MockService.getMockUserBalance(user.email);
 
     const mockData: BalanceResponse = {
       currency: 'BRL',
-      accountBalance: mockUser?.balance || user.balance || 5000.0,
+      accountBalance: currentBalance,
     };
 
     const response = await withRetry(

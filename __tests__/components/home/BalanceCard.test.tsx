@@ -20,6 +20,12 @@ const store = mockStore({
     isLoading: false,
     error: null,
   },
+  balance: {
+    balance: 1500.75,
+    accountNumber: '1234-5678-9012-3456',
+    isLoading: false,
+    error: null,
+  },
 });
 
 describe('BalanceCard', () => {
@@ -87,6 +93,12 @@ describe('BalanceCard', () => {
         isAuthenticated: false,
         user: null,
         token: null,
+        isLoading: false,
+        error: null,
+      },
+      balance: {
+        balance: 0,
+        accountNumber: '',
         isLoading: false,
         error: null,
       },

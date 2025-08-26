@@ -4,9 +4,18 @@ jest.mock('../../../src/store', () => ({
   store: {
     getState: () => ({
       auth: {
-        user: { id: '1', balance: 5000 },
+        user: { id: '1', email: 'test@test.com', balance: 5000 },
       },
     }),
+  },
+}));
+
+jest.mock('../../../src/services/mock/mockService', () => ({
+  MockService: {
+    getMockUserBalance: jest.fn().mockResolvedValue(5000),
+    simulateApiCall: jest
+      .fn()
+      .mockImplementation((data) => Promise.resolve({ success: true, data })),
   },
 }));
 
