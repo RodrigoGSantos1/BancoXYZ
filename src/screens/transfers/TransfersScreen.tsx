@@ -7,7 +7,7 @@ import {
   TouchableOpacity,
   ListRenderItem,
 } from 'react-native';
-import { Plus, Calendar } from 'lucide-react-native';
+import { Calendar, Plus } from 'lucide-react-native';
 import { TransferService } from '../../services/transfer/transferService';
 import { TransferFilters, TransferItem } from '../../components/index';
 import { useNavigation } from '@react-navigation/native';
@@ -155,18 +155,13 @@ const TransfersScreen = () => {
 
   return (
     <View className="flex-1 bg-gray-100">
-      <View className="bg-white p-4 border-b border-gray-200">
-        <View className="flex-row items-center justify-between">
-          <Text className="text-2xl font-bold text-gray-800">
-            Transferências
-          </Text>
-          <TouchableOpacity
-            className="bg-primary-500 rounded-full w-10 h-10 items-center justify-center"
-            onPress={handleNewTransfer}
-          >
-            <Plus size={20} color="white" />
-          </TouchableOpacity>
-        </View>
+      <View className="p-4">
+        <TouchableOpacity
+          className="bg-primary-500 rounded-full w-10 h-10 items-center justify-center self-end"
+          onPress={handleNewTransfer}
+        >
+          <Plus size={20} color="white" />
+        </TouchableOpacity>
       </View>
 
       <FlatList

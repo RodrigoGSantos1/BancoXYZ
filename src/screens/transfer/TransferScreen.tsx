@@ -9,7 +9,7 @@ import {
 } from 'react-native';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Send, ArrowLeft } from 'lucide-react-native';
+import { Send } from 'lucide-react-native';
 import { useNavigation } from '@react-navigation/native';
 import { transferSchema, TransferFormData } from '../../schemas/transferSchema';
 import { TransferService } from '../../services/transfer/transferService';
@@ -70,15 +70,6 @@ const TransferScreen = () => {
 
   return (
     <View className="flex-1 bg-gray-100">
-      <View className="bg-white p-4 flex-row items-center">
-        <TouchableOpacity onPress={() => navigation.goBack()} className="mr-4">
-          <ArrowLeft size={24} color="#374151" />
-        </TouchableOpacity>
-        <Text className="text-xl font-bold text-gray-800">
-          Nova transferência
-        </Text>
-      </View>
-
       <ScrollView className="flex-1 p-4">
         <View className="bg-white rounded-2xl p-6 shadow-sm">
           <Text className="text-2xl font-bold text-gray-800 mb-6">
