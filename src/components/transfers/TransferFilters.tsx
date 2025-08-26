@@ -71,6 +71,7 @@ export const TransferFilters: React.FC<TransferFiltersProps> = ({
         </View>
         <TouchableOpacity
           className="w-11 h-11 items-center justify-center rounded-lg border border-gray-200 bg-primary-500"
+          testID="filter-button"
           onPress={() => setShowFilters(!showFilters)}
         >
           <Filter size={18} color="#FFFFFF" />
@@ -150,6 +151,7 @@ export const TransferFilters: React.FC<TransferFiltersProps> = ({
                   ? 'bg-primary-500'
                   : 'bg-gray-300'
               }`}
+              testID="apply-filters-button"
               onPress={() => {
                 handleValueFilter();
                 handleDateFilter();

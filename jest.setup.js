@@ -23,3 +23,34 @@ jest.mock('@react-navigation/native', () => ({
 }));
 
 global.fetch = jest.fn();
+
+// Mock para suprimir warnings específicos do act()
+const originalError = console.error;
+const originalWarn = console.warn;
+
+beforeEach(() => {
+  console.error = (...args) => {
+    if (
+      (typeof args[0] === 'string' &&
+        args[0].includes('Warning: An update to') &&
+        args[0].includes('was not wrapped in act')) ||
+      args[0].includes('A worker process has failed to exit gracefully')
+    ) {
+      return;
+    }
+    originalError.call(console, ...args);
+  };
+
+  console.warn = (...args) => {
+    if (typeof args[0] === 'string' && args[0].includes('useNativeDriver')) {
+      return;
+    }
+    originalWarn.call(console, ...args);
+  };
+});
+
+afterEach(() => {
+  console.error = originalError;
+  console.warn = originalWarn;
+  jest.clearAllTimers();
+});

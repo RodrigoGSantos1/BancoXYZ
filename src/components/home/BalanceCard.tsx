@@ -52,6 +52,7 @@ export const BalanceCard = React.memo(() => {
           <TouchableOpacity
             onPress={() => setShowBalance(!showBalance)}
             hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+            testID="toggle-balance-visibility"
           >
             {showBalance ? (
               <EyeOff size={16} color="#6B7280" />

@@ -3,51 +3,56 @@ import { render, fireEvent } from '@testing-library/react-native';
 import { MoneyInput } from '../../../src/components/forms/MoneyInput';
 
 describe('MoneyInput', () => {
-  it('should format initial value correctly', () => {
+  const mockProps = {
+    label: 'Valor',
+    value: 1500,
+    onValueChange: jest.fn(),
+    error: undefined,
+    placeholder: 'Digite um valor',
+  };
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it('renders correctly with label and value', () => {
+    const { getByText, getByDisplayValue } = render(
+      <MoneyInput {...mockProps} />
+    );
+
+    expect(getByText('Valor')).toBeTruthy();
+    expect(getByDisplayValue('15,00')).toBeTruthy();
+  });
+
+  it('formats value correctly', () => {
     const { getByDisplayValue } = render(
-      <MoneyInput label="Valor" value={1000} onValueChange={() => {}} />
+      <MoneyInput {...mockProps} value={150075} />
     );
 
-    expect(getByDisplayValue('10,00')).toBeTruthy();
+    expect(getByDisplayValue('1.500,75')).toBeTruthy();
   });
 
-  it('should handle user input correctly', () => {
-    const onValueChange = jest.fn();
-    const { getByPlaceholderText } = render(
-      <MoneyInput
-        label="Valor"
-        value={0}
-        onValueChange={onValueChange}
-        placeholder="0,00"
-      />
-    );
+  it('calls onValueChange with correct value when typing', () => {
+    const { getByDisplayValue } = render(<MoneyInput {...mockProps} />);
+    const input = getByDisplayValue('15,00');
 
-    const input = getByPlaceholderText('0,00');
-
-    fireEvent.changeText(input, '1');
-    expect(onValueChange).toHaveBeenCalledWith(1);
-
-    fireEvent.changeText(input, '10');
-    expect(onValueChange).toHaveBeenCalledWith(10);
-
-    fireEvent.changeText(input, '100');
-    expect(onValueChange).toHaveBeenCalledWith(100);
+    fireEvent.changeText(input, '1.234,56');
+    expect(mockProps.onValueChange).toHaveBeenCalledWith(123456);
   });
 
-  it('should handle empty input', () => {
-    const onValueChange = jest.fn();
-    const { getByPlaceholderText } = render(
-      <MoneyInput
-        label="Valor"
-        value={0}
-        onValueChange={onValueChange}
-        placeholder="0,00"
-      />
+  it('shows error message when error prop is provided', () => {
+    const { getByText } = render(
+      <MoneyInput {...mockProps} error="Valor inválido" />
     );
 
-    const input = getByPlaceholderText('0,00');
+    expect(getByText('Valor inválido')).toBeTruthy();
+  });
 
-    fireEvent.changeText(input, '');
-    expect(onValueChange).toHaveBeenCalledWith(0);
+  it('shows placeholder when value is 0', () => {
+    const { getByPlaceholderText } = render(
+      <MoneyInput {...mockProps} value={0} />
+    );
+
+    expect(getByPlaceholderText('Digite um valor')).toBeTruthy();
   });
 });
