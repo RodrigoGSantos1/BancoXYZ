@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback, useMemo } from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
-import { RefreshCw } from 'lucide-react-native';
+import { RefreshCw, Eye, EyeOff } from 'lucide-react-native';
 import { BalanceService } from '../../services/balance/balanceService';
 import { useAuthContext } from '../../providers/AuthProvider';
 
@@ -9,6 +9,7 @@ export const BalanceCard = React.memo(() => {
   const [balance, setBalance] = useState(0);
   const [currency, setCurrency] = useState('BRL');
   const [isLoading, setIsLoading] = useState(false);
+  const [showBalance, setShowBalance] = useState(true);
 
   const fetchBalance = useCallback(async () => {
     if (!user || !isAuthenticated) {
@@ -46,17 +47,45 @@ export const BalanceCard = React.memo(() => {
   return (
     <View className="bg-white rounded-2xl p-6 shadow-lg mb-4">
       <View className="flex-row justify-between items-center mb-4">
-        <Text className="text-gray-600 text-base">Saldo disponível</Text>
-        <TouchableOpacity onPress={fetchBalance} disabled={isLoading}>
+        <View className="flex-row items-center">
+          <Text className="text-gray-600 text-base mr-2">Saldo disponível</Text>
+          <TouchableOpacity
+            onPress={() => setShowBalance(!showBalance)}
+            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+          >
+            {showBalance ? (
+              <EyeOff size={16} color="#6B7280" />
+            ) : (
+              <Eye size={16} color="#6B7280" />
+            )}
+          </TouchableOpacity>
+        </View>
+        <TouchableOpacity
+          onPress={fetchBalance}
+          disabled={isLoading}
+          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+          className={`${isLoading ? 'animate-spin' : ''}`}
+        >
           <RefreshCw size={20} color={isLoading ? '#9CA3AF' : '#6B7280'} />
         </TouchableOpacity>
       </View>
 
-      <Text className="text-3xl font-bold text-gray-800 mb-2">
-        {currency} {formattedBalance}
-      </Text>
+      <View className="bg-gray-50 rounded-xl p-4 mb-4">
+        <Text className="text-3xl font-bold text-gray-800">
+          {showBalance ? (
+            <>
+              {currency} {formattedBalance}
+            </>
+          ) : (
+            '••••••'
+          )}
+        </Text>
+      </View>
 
-      <Text className="text-gray-500 text-sm">Conta: {user.accountNumber}</Text>
+      <View className="flex-row items-center justify-between">
+        <Text className="text-gray-500 text-sm">Conta</Text>
+        <Text className="text-gray-700 font-medium">{user.accountNumber}</Text>
+      </View>
     </View>
   );
 });
