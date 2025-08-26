@@ -69,9 +69,9 @@ const LoginScreen = () => {
         </View>
 
         <View className="flex-1 justify-center items-center px-8">
-          <Text className="text-white text-4xl font-bold mb-2">Login</Text>
+          <Text className="text-white text-4xl font-bold mb-2">BancoXYZ</Text>
           <Text className="text-white text-lg opacity-90">
-            Please Login to continue
+            Faça login para continuar
           </Text>
         </View>
       </LinearGradient>
@@ -80,7 +80,7 @@ const LoginScreen = () => {
         <View className="bg-white rounded-3xl shadow-lg p-8">
           <View className="mb-6">
             <Text className="text-gray-700 font-semibold mb-2 text-base">
-              Email Address
+              E-mail
             </Text>
             <Controller
               control={control}
@@ -109,7 +109,7 @@ const LoginScreen = () => {
 
           <View className="mb-6">
             <Text className="text-gray-700 font-semibold mb-2 text-base">
-              Password
+              Senha
             </Text>
             <Controller
               control={control}
@@ -161,11 +161,11 @@ const LoginScreen = () => {
               >
                 {rememberMe && <Text className="text-white text-xs">✓</Text>}
               </View>
-              <Text className="text-gray-600">Remember me</Text>
+              <Text className="text-gray-600">Lembrar-me</Text>
             </TouchableOpacity>
 
             <TouchableOpacity>
-              <Text className="text-gray-600">Forgot Password?</Text>
+              <Text className="text-gray-600">Esqueceu a senha?</Text>
             </TouchableOpacity>
           </View>
 
@@ -175,7 +175,7 @@ const LoginScreen = () => {
             disabled={isLoading}
           >
             <Text className="text-white text-center font-bold text-lg">
-              {isLoading ? 'Entrando...' : 'Login'}
+              {isLoading ? 'Entrando...' : 'Entrar'}
             </Text>
           </TouchableOpacity>
         </View>
@@ -185,7 +185,7 @@ const LoginScreen = () => {
         <TouchableOpacity className="w-16 h-16 bg-primary-900 rounded-full items-center justify-center mb-3">
           <Fingerprint size={32} color="white" />
         </TouchableOpacity>
-        <Text className="text-gray-600 text-center">Biometric Login</Text>
+        <Text className="text-gray-600 text-center">Login com biometria</Text>
       </View>
 
       {error && (

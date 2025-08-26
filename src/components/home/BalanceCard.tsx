@@ -46,7 +46,7 @@ export const BalanceCard = React.memo(() => {
   return (
     <View className="bg-white rounded-2xl p-6 shadow-lg mb-4">
       <View className="flex-row justify-between items-center mb-4">
-        <Text className="text-gray-600 text-base">Saldo Disponível</Text>
+        <Text className="text-gray-600 text-base">Saldo disponível</Text>
         <TouchableOpacity onPress={fetchBalance} disabled={isLoading}>
           <RefreshCw size={20} color={isLoading ? '#9CA3AF' : '#6B7280'} />
         </TouchableOpacity>

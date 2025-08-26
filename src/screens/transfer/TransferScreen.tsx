@@ -42,7 +42,7 @@ const TransferScreen = () => {
 
   const onSubmit = async (data: TransferFormData) => {
     if (data.value > (user?.balance || 0)) {
-      Alert.alert('Erro', 'Saldo insuficiente para realizar a transferência');
+      Alert.alert('Erro', 'Saldo insuficiente para realizar a transferência.');
       return;
     }
 
@@ -59,7 +59,10 @@ const TransferScreen = () => {
         },
       ]);
     } catch (error) {
-      Alert.alert('Erro', 'Falha ao realizar transferência. Tente novamente.');
+      Alert.alert(
+        'Erro',
+        'Não foi possível realizar a transferência. Tente novamente.'
+      );
     } finally {
       setIsLoading(false);
     }
@@ -72,14 +75,14 @@ const TransferScreen = () => {
           <ArrowLeft size={24} color="#374151" />
         </TouchableOpacity>
         <Text className="text-xl font-bold text-gray-800">
-          Nova Transferência
+          Nova transferência
         </Text>
       </View>
 
       <ScrollView className="flex-1 p-4">
         <View className="bg-white rounded-2xl p-6 shadow-sm">
           <Text className="text-2xl font-bold text-gray-800 mb-6">
-            Dados da Transferência
+            Dados da transferência
           </Text>
 
           <Controller
@@ -191,7 +194,7 @@ const TransferScreen = () => {
           >
             <Send size={20} color="white" className="mr-2" />
             <Text className="text-white text-center font-bold text-lg ml-2">
-              {isLoading ? 'Processando...' : 'Realizar Transferência'}
+              {isLoading ? 'Processando...' : 'Realizar transferência'}
             </Text>
           </TouchableOpacity>
         </View>

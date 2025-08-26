@@ -22,7 +22,7 @@ export const QuickActions = () => {
   return (
     <View className="bg-gray-50 rounded-2xl p-4">
       <Text className="text-gray-800 font-semibold text-lg mb-4">
-        Ações Rápidas
+        Ações rápidas
       </Text>
 
       <View className="flex-row space-x-3">

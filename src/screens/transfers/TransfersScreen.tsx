@@ -123,7 +123,9 @@ const TransfersScreen = () => {
             {filteredTransfers.length} transferência(s)
           </Text>
           <TouchableOpacity className="flex-row items-center">
-            <Text className="text-primary-500 text-sm mr-1">Ordenar</Text>
+            <Text className="text-primary-500 text-sm mr-1">
+              Ordenar por data
+            </Text>
             <Calendar size={16} className="text-primary-500" />
           </TouchableOpacity>
         </View>
