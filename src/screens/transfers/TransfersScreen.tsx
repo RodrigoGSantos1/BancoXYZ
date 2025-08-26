@@ -196,7 +196,7 @@ const TransfersScreen = () => {
         data={filteredTransfers}
         renderItem={renderItem}
         keyExtractor={(item) => item.id.toString()}
-        contentContainerStyle="px-4"
+        contentContainerStyle={{ paddingHorizontal: 16 }}
         getItemLayout={getTransferItemLayout}
         removeClippedSubviews
         maxToRenderPerBatch={5}
