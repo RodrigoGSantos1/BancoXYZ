@@ -6,3 +6,4 @@ export { QuickActions } from './home/QuickActions';
 export { UserInfo } from './home/UserInfo';
 export { TransferFilters } from './transfers/TransferFilters';
 export { TransferItem } from './transfers/TransferItem';
+export { SplashScreen } from './SplashScreen';
