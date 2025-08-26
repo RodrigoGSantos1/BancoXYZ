@@ -1,4 +1,27 @@
-export const MOCK_USERS = [
+interface MockTransfer {
+  id: number;
+  value: number;
+  date: string;
+  currency: string;
+  payeer: {
+    document: string;
+    name: string;
+  };
+  userId: number;
+}
+
+interface MockUser {
+  id: number;
+  name: string;
+  email: string;
+  password: string;
+  balance: number;
+  accountNumber: string;
+}
+
+let MOCK_TRANSFERS: MockTransfer[] = [];
+
+export const MOCK_USERS: MockUser[] = [
   {
     id: 1,
     name: 'Gabriel Topaz',
@@ -25,25 +48,4 @@ export const MOCK_USERS = [
   },
 ];
 
-export const MOCK_TRANSFERS = [
-  {
-    id: 1,
-    value: 500.0,
-    date: '2024-01-15',
-    currency: 'BRL',
-    payeer: {
-      document: '123.456.789-00',
-      name: 'João Silva',
-    },
-  },
-  {
-    id: 2,
-    value: 1200.0,
-    date: '2024-01-10',
-    currency: 'BRL',
-    payeer: {
-      document: '987.654.321-00',
-      name: 'Maria Santos',
-    },
-  },
-];
+export { MOCK_TRANSFERS };

@@ -27,6 +27,7 @@ export interface TransferRequest {
   value: number;
   currency: string;
   payeerDocument: string;
+  payeerName: string;
   transferDate: string;
 }
 

@@ -9,7 +9,9 @@ import { withRetry } from '../../utils/retry';
 
 export class TransferService {
   static async createTransfer(
-    data: TransferRequest
+    data: TransferRequest,
+    userEmail: string,
+    userId: number
   ): Promise<TransferResponse> {
     if (!data.value || data.value <= 0) {
       throw new ValidationError('Valor deve ser maior que zero', {
@@ -35,6 +37,17 @@ export class TransferService {
       });
     }
 
+    const currentBalance = await MockService.getMockUserBalance(userEmail);
+    if (currentBalance < data.value) {
+      throw new ValidationError(
+        'Saldo insuficiente para realizar a transferência',
+        {
+          balance: currentBalance,
+          value: data.value,
+        }
+      );
+    }
+
     const mockData: TransferResponse = {
       status: 'success',
       transferId: `TRF-${Date.now()}`,
@@ -47,38 +60,27 @@ export class TransferService {
     );
 
     if (response.success) {
+      await MockService.updateUserBalance(userEmail, data.value, 'debit');
+      await MockService.addTransfer(userId, {
+        value: data.value,
+        date: data.transferDate,
+        currency: data.currency,
+        payeer: {
+          document: data.payeerDocument,
+          name: data.payeerName,
+        },
+      });
       return response.data;
     } else {
       throw new TransferError('Erro ao criar transferência', { response });
     }
   }
 
-  static async getTransfers(): Promise<TransferItem[]> {
-    const mockData: TransferItem[] = [
-      {
-        id: 1,
-        value: 500.0,
-        date: '2024-01-15',
-        currency: 'BRL',
-        payeer: {
-          document: '123.456.789-00',
-          name: 'João Silva',
-        },
-      },
-      {
-        id: 2,
-        value: 1200.0,
-        date: '2024-01-10',
-        currency: 'BRL',
-        payeer: {
-          document: '987.654.321-00',
-          name: 'Maria Santos',
-        },
-      },
-    ];
+  static async getTransfers(userId: number): Promise<TransferItem[]> {
+    const userTransfers = MockService.getUserTransfers(userId);
 
     const response = await withRetry(
-      () => MockService.simulateApiCall(mockData, 600),
+      () => MockService.simulateApiCall(userTransfers, 600),
       { maxAttempts: 3, delayMs: 1000 }
     );
 

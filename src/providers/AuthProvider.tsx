@@ -43,7 +43,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
     dispatch(loginStart());
     try {
       const response = await AuthService.login({ email, password });
-      const mockUser = MockService.getMockUser(email);
+      const mockUser = await MockService.getMockUser(email);
       if (!mockUser) {
         throw new Error('Usuário não encontrado');
       }

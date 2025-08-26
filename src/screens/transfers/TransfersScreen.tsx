@@ -12,11 +12,13 @@ import { Calendar, Plus, FileX, RefreshCw } from 'lucide-react-native';
 import { TransferService } from '../../services/transfer/transferService';
 import { TransferFilters, TransferItem } from '../../components/index';
 import { useNavigation } from '@react-navigation/native';
+import { useAuthContext } from '../../providers/AuthProvider';
 import { Transfer } from '../../types';
 import { getTransferItemLayout } from '../../utils/dimensions';
 
 const TransfersScreen = () => {
   const navigation = useNavigation();
+  const { user } = useAuthContext();
   const [transfers, setTransfers] = useState<Transfer[]>([]);
   const [filteredTransfers, setFilteredTransfers] = useState<Transfer[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -25,7 +27,9 @@ const TransfersScreen = () => {
   const fetchTransfers = useCallback(async () => {
     setIsLoading(true);
     try {
-      const response = await TransferService.getTransfers();
+      const response = await TransferService.getTransfers(
+        parseInt(user?.id || '0', 10)
+      );
       setTransfers(response);
       setFilteredTransfers(response);
     } catch (error) {
@@ -36,7 +40,7 @@ const TransfersScreen = () => {
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [user?.id]);
 
   useEffect(() => {
     fetchTransfers();

@@ -56,7 +56,11 @@ const TransferScreen = () => {
 
     setIsLoading(true);
     try {
-      const response = await TransferService.createTransfer(data);
+      const response = await TransferService.createTransfer(
+        data,
+        user?.email || '',
+        parseInt(user?.id || '0', 10)
+      );
       dispatch(updateBalance({ amount: data.value, operation: 'debit' }));
       dispatch(
         createTransferSuccess({

@@ -1,8 +1,11 @@
 import { AuthService } from '../../../src/services/auth/authService';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { MOCK_USERS } from '../../../src/services/mock/mockData';
 
 describe('AuthService', () => {
-  beforeEach(() => {
+  beforeEach(async () => {
     jest.clearAllMocks();
+    await AsyncStorage.setItem('mock_users', JSON.stringify(MOCK_USERS));
   });
 
   describe('login', () => {

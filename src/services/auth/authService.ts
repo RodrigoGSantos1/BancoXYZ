@@ -4,9 +4,13 @@ import { AuthenticationError, ValidationError } from '../../errors/AppError';
 
 export class AuthService {
   static async login(credentials: LoginRequest): Promise<LoginResponse> {
-    const mockUser = MockService.getMockUser(credentials.email);
+    const mockUser = await MockService.getMockUser(credentials.email);
+    const isValid = await MockService.validateCredentials(
+      credentials.email,
+      credentials.password
+    );
 
-    if (mockUser && mockUser.password === credentials.password) {
+    if (mockUser && isValid) {
       const response: LoginResponse = {
         token: `mock-jwt-token-${mockUser.id}`,
         user: {
