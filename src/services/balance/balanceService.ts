@@ -1,12 +1,12 @@
 import { MockService } from '../mock/mockService';
-import { useAuthStore } from '../../store/auth/authStore';
+import { store } from '../../store';
 import { BalanceResponse } from '../../types';
 import { AuthenticationError, BalanceError } from '../../errors/AppError';
 import { withRetry } from '../../utils/retry';
 
 export class BalanceService {
   static async getBalance(): Promise<BalanceResponse> {
-    const user = useAuthStore.getState().user;
+    const user = store.getState().auth.user;
 
     if (!user) {
       throw new AuthenticationError('Usuário não autenticado');

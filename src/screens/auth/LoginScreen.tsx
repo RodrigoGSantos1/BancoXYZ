@@ -9,7 +9,7 @@ import {
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { useAuthStore } from '../../store/auth/authStore';
+import { useAuthContext } from '../../providers/AuthProvider';
 import { Eye, EyeOff, Fingerprint } from 'lucide-react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 
@@ -24,7 +24,7 @@ const loginSchema = z.object({
 type LoginFormData = z.infer<typeof loginSchema>;
 
 const LoginScreen = () => {
-  const { login, isLoading, error, clearError } = useAuthStore();
+  const { login, isLoading, error, clearError } = useAuthContext();
   const [rememberMe, setRememberMe] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
 

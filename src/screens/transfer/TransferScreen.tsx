@@ -14,12 +14,12 @@ import { useNavigation } from '@react-navigation/native';
 import { transferSchema, TransferFormData } from '../../schemas/transferSchema';
 import { TransferService } from '../../services/transfer/transferService';
 import { MaskedInput, DatePicker } from '../../components/index';
-import { useAuthStore } from '../../store/auth/authStore';
+import { useAuthContext } from '../../providers/AuthProvider';
 import { masks } from '../../utils/masks';
 
 const TransferScreen = () => {
   const navigation = useNavigation();
-  const { user } = useAuthStore();
+  const { user } = useAuthContext();
   const [isLoading, setIsLoading] = useState(false);
 
   const {

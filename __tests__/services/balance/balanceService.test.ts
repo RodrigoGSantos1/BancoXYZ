@@ -1,9 +1,11 @@
 import { BalanceService } from '../../../src/services/balance/balanceService';
 
-jest.mock('../../../src/store/auth/authStore', () => ({
-  useAuthStore: {
+jest.mock('../../../src/store', () => ({
+  store: {
     getState: () => ({
-      user: { id: '1', balance: 5000 },
+      auth: {
+        user: { id: '1', balance: 5000 },
+      },
     }),
   },
 }));

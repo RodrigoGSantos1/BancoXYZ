@@ -1,8 +1,8 @@
 import { useEffect } from 'react';
-import { useAuthStore } from '../store/auth/authStore';
+import { useAuthContext } from '../providers/AuthProvider';
 
 export const useAuth = () => {
-  const { isAuthenticated, token, user, logout } = useAuthStore();
+  const { isAuthenticated, token, user, logout } = useAuthContext();
 
   useEffect(() => {
     if (token && !isAuthenticated) {

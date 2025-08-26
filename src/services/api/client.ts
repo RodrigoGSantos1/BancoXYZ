@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { useAuthStore } from '../../store/auth/authStore';
+import { store } from '../../store';
 
 const API_BASE_URL = 'https://api.bancoxyz.com';
 
@@ -13,7 +13,7 @@ export const apiClient = axios.create({
 
 apiClient.interceptors.request.use(
   (config) => {
-    const token = useAuthStore.getState().token;
+    const token = store.getState().auth.token;
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -26,7 +26,7 @@ apiClient.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      useAuthStore.getState().logout();
+      store.dispatch({ type: 'auth/logout' });
     }
     return Promise.reject(error);
   }

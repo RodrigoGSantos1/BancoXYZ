@@ -1,10 +1,10 @@
 import React from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import { User, Settings } from 'lucide-react-native';
-import { useAuthStore } from '../../store/auth/authStore';
+import { useAuthContext } from '../../providers/AuthProvider';
 
 export const UserInfo = () => {
-  const { user } = useAuthStore();
+  const { user } = useAuthContext();
 
   return (
     <View className="bg-white rounded-2xl p-4 shadow-sm mb-4">

@@ -2,10 +2,10 @@ import React, { useEffect, useState, useCallback, useMemo } from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import { RefreshCw } from 'lucide-react-native';
 import { BalanceService } from '../../services/balance/balanceService';
-import { useAuthStore } from '../../store/auth/authStore';
+import { useAuthContext } from '../../providers/AuthProvider';
 
 export const BalanceCard = React.memo(() => {
-  const { user, isAuthenticated } = useAuthStore();
+  const { user, isAuthenticated } = useAuthContext();
   const [balance, setBalance] = useState(0);
   const [currency, setCurrency] = useState('BRL');
   const [isLoading, setIsLoading] = useState(false);

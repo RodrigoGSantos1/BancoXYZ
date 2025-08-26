@@ -1,5 +1,14 @@
 import React, { createContext, useContext, ReactNode } from 'react';
-import { useAuthStore } from '../store/auth/authStore';
+import { useAppDispatch, useAppSelector } from '../hooks/useRedux';
+import {
+  loginStart,
+  loginSuccess,
+  loginFailure,
+  logout,
+  clearError,
+} from '../store/slices/authSlice';
+import { AuthService } from '../services/auth/authService';
+import { MockService } from '../services/mock/mockService';
 
 interface AuthContextType {
   isAuthenticated: boolean;
@@ -25,26 +34,56 @@ export const useAuthContext = () => {
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
-  const {
-    isAuthenticated,
-    user,
-    token,
-    login,
-    logout,
-    isLoading,
-    error,
-    clearError,
-  } = useAuthStore();
+  const dispatch = useAppDispatch();
+  const { isAuthenticated, user, token, isLoading, error } = useAppSelector(
+    (state) => state.auth
+  );
+
+  const login = async (email: string, password: string) => {
+    dispatch(loginStart());
+    try {
+      const response = await AuthService.login({ email, password });
+      const mockUser = MockService.getMockUser(email);
+      if (!mockUser) {
+        throw new Error('Usuário não encontrado');
+      }
+
+      dispatch(
+        loginSuccess({
+          user: {
+            id: response.user.id.toString(),
+            email: response.user.email,
+            name: response.user.name,
+            balance: mockUser.balance,
+            accountNumber: mockUser.accountNumber,
+          },
+          token: response.token,
+        })
+      );
+    } catch (loginError) {
+      dispatch(
+        loginFailure({
+          message:
+            loginError instanceof Error
+              ? loginError.message
+              : 'Credenciais inválidas',
+        })
+      );
+    }
+  };
+
+  const handleLogout = () => dispatch(logout());
+  const handleClearError = () => dispatch(clearError());
 
   const value: AuthContextType = {
     isAuthenticated,
     user,
     token,
     login,
-    logout,
+    logout: handleLogout,
     isLoading,
     error,
-    clearError,
+    clearError: handleClearError,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
